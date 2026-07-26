@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#070d1c">
+<title>Diamond IQ — Where's the Play?</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+:root{
+  --ink:#070d1c; --chalk:#f4f7f5; --dim:#93a2c4;
+  --amber:#ffc24a; --amber-d:#e09b1c; --safe:#3ee07f; --out:#ff5a5f;
+  --line:rgba(255,255,255,.10); --panel:rgba(255,255,255,.05);
+  --o1:#3ba7ff; --o2:#ffc24a; --o3:#ff5fa8;
+  --disp:"Arial Black","Helvetica Neue",Impact,system-ui,sans-serif;
+  --body:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+body{font-family:var(--body);color:var(--chalk);background:var(--ink);-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(60% 42% at 12% -6%,rgba(255,214,140,.16),transparent 62%),
+             radial-gradient(60% 42% at 88% -6%,rgba(255,214,140,.16),transparent 62%)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+#app{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+@keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,3px)}
+ 40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,3px)}}
+.shake{animation:shake .34s cubic-bezier(.36,.07,.19,.97)}
+
+/* ═══════ START ═══════ */
+#start{align-items:center;justify-content:center;overflow-y:auto;padding:22px 18px}
+.hero{width:100%;max-width:520px;text-align:center;margin:auto 0}
+.seam{width:70px;height:70px;margin:0 auto 12px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;letter-spacing:-.035em;
+  margin:0 0 8px;text-transform:uppercase;
+  background:linear-gradient(180deg,#fff 30%,#9fb4dd 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-family:var(--disp);font-size:clamp(16px,4.4vw,23px);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--amber);margin:0 0 16px}
+.blurb{color:#cbd6ee;font-size:16px;line-height:1.6;max-width:380px;margin:0 auto 24px}
+.picklab{font:800 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.pickgrp{margin-bottom:16px}
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pick{padding:12px 5px;border-radius:14px;background:var(--panel);border:2px solid var(--line);transition:.16s}
+.pick .ic{font-size:21px;line-height:1;margin-bottom:5px}
+.pick b{display:block;font-size:14.5px;font-weight:800}
+.pick i{display:block;font-style:normal;font-size:11px;color:var(--dim);margin-top:2px}
+.pick.sel{background:rgba(255,194,74,.17);border-color:var(--amber)}
+.pick.sel i{color:var(--amber)}
+.pick:active{transform:scale(.95)}
+.toggles{display:flex;gap:8px;margin-bottom:18px}
+.tg{flex:1;padding:12px 8px;border-radius:14px;background:var(--panel);border:2px solid var(--line);
+  font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px}
+.tg.on{background:rgba(62,224,127,.14);border-color:var(--safe)}
+.tg:active{transform:scale(.96)}
+.play{width:100%;padding:20px;border-radius:18px;font-family:var(--disp);font-size:24px;letter-spacing:.08em;
+  text-transform:uppercase;color:#2a1a00;background:linear-gradient(180deg,#ffd977,var(--amber-d));
+  box-shadow:0 8px 0 #9d6a08,0 16px 34px rgba(255,180,40,.3);transition:.1s}
+.play:active{transform:translateY(6px);box-shadow:0 2px 0 #9d6a08}
+.career{margin-top:16px;font-size:12.5px;color:var(--dim)}
+
+/* ═══════ SCOREBOARD ═══════ */
+.board{flex:0 0 auto;display:flex;gap:8px;padding:8px 10px;align-items:stretch;
+  background:linear-gradient(180deg,#111c38,#0a1226);border-bottom:1px solid var(--line);position:relative;z-index:5}
+.team{flex:1;border-radius:14px;padding:7px 10px 8px;display:flex;align-items:center;gap:10px;min-width:0}
+.team.me{background:rgba(62,224,127,.11);border:2px solid rgba(62,224,127,.33)}
+.team.them{background:rgba(255,90,95,.11);border:2px solid rgba(255,90,95,.33)}
+.team .big{font-family:var(--disp);font-size:clamp(26px,7.4vw,36px);line-height:.9;font-variant-numeric:tabular-nums}
+.team.me .big{color:var(--safe)} .team.them .big{color:var(--out)}
+.team .lab{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#b9c6e2;line-height:1.15}
+.team .col{min-width:0;flex:1}
+.pips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.14);transition:.3s}
+.pip.f{background:var(--safe);box-shadow:0 0 7px rgba(62,224,127,.8)}
+.flame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;font-size:19px;
+  opacity:0;transition:.3s;pointer-events:none;filter:drop-shadow(0 0 10px rgba(255,140,20,.9))}
+.flame.on{opacity:1}
+.pop{position:absolute;left:50%;top:6px;transform:translateX(-50%);font-family:var(--disp);font-size:19px;
+  color:var(--amber);pointer-events:none;opacity:0;z-index:9}
+@keyframes popup{0%{opacity:0;transform:translate(-50%,4px) scale(.7)}
+ 25%{opacity:1;transform:translate(-50%,-6px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
+.pop.go{animation:popup 1.1s ease-out}
+
+/* ═══════ FIELD ═══════ */
+.stage{flex:1;min-height:0;display:flex;flex-direction:column}
+.fieldbox{position:relative;flex:1;min-height:0}
+#field{position:absolute;left:0;top:60px;width:100%;height:calc(100% - 64px);display:block}
+#field text{font-family:var(--body)}
+#gFielders,#gRunners{pointer-events:none}
+.hit-tgt{cursor:pointer}
+.sitbar{position:absolute;left:0;right:0;top:0;height:60px;padding:7px 10px;pointer-events:none;overflow:hidden;
+  background:linear-gradient(180deg,rgba(7,13,28,.9),rgba(7,13,28,0));display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px}
+.outsrow{display:flex;align-items:center;gap:6px}
+.ob{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.13);
+  border:2px solid rgba(255,255,255,.22);position:relative}
+.ob.f{background:#fbfbf7;border-color:#fff;box-shadow:0 0 9px rgba(255,255,255,.55)}
+.ob.f::after{content:"";position:absolute;inset:2px 4px;border-left:1.5px solid #d4302f;border-right:1.5px solid #d4302f;
+  border-radius:50%}
+.outsrow em{font-style:normal;font:800 12px/1 var(--body);letter-spacing:.1em;color:var(--amber);margin-left:2px}
+.sitbar b{font-size:clamp(14px,4.1vw,18px);font-weight:800;letter-spacing:.01em;text-align:center;
+  text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.tagx{font:800 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:#0b1226;
+  background:var(--amber);padding:3px 7px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.setup{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  opacity:0;transition:opacity .28s;padding:20px}
+.setup.on{opacity:1}
+.setupcard{background:rgba(7,13,28,.9);border:2px solid var(--amber);border-radius:20px;padding:16px 22px;
+  text-align:center;box-shadow:0 16px 50px rgba(0,0,0,.6);transform:scale(.92);transition:transform .28s}
+.setup.on .setupcard{transform:scale(1)}
+.setupcard .l{font:800 11px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.setupcard .t{font-family:var(--disp);font-size:clamp(19px,5.6vw,28px);text-transform:uppercase;line-height:1.05}
+.setupcard .o{display:flex;gap:6px;justify-content:center;margin-top:11px;align-items:center}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;padding:16px}
+.callout{font-family:var(--disp);text-transform:uppercase;text-align:center;opacity:0;transform:scale(.3) rotate(-9deg)}
+.callout.show{animation:stamp .5s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(2.4) rotate(-9deg)}55%{opacity:1;transform:scale(.9) rotate(-9deg)}
+ 70%{transform:scale(1.06) rotate(-9deg)}100%{opacity:1;transform:scale(1) rotate(-9deg)}}
+.callout .big{font-size:clamp(56px,18vw,116px);line-height:.82;color:#fff}
+.callout .small{font-size:clamp(13px,3.6vw,18px);letter-spacing:.16em;margin-top:8px}
+.callout.good .big{text-shadow:0 0 44px rgba(62,224,127,.9),0 6px 0 #1a8f4c}
+.callout.bad .big{text-shadow:0 0 44px rgba(255,90,95,.9),0 6px 0 #a11e22}
+.btns{position:absolute;top:8px;right:8px;z-index:20;display:flex;gap:6px}
+.ib{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:16px;backdrop-filter:blur(6px)}
+.ib.off{opacity:.4}
+
+/* ═══════ CONTROLS ═══════ */
+.controls{flex:0 0 auto;border-top:1px solid var(--line);background:linear-gradient(180deg,#0c142a,#070d1c);
+  padding:9px 11px calc(11px + env(safe-area-inset-bottom));position:relative;z-index:6}
+.clock{height:11px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:9px;display:none}
+.clock.on{display:block}
+.clock i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--safe),#a8ee5f);transform-origin:left}
+.clock.warn i{background:linear-gradient(90deg,var(--amber),#ff9b3d)}
+.clock.crit i{background:linear-gradient(90deg,var(--out),#ff9b3d);animation:pulse .45s infinite alternate}
+@keyframes pulse{to{opacity:.4}}
+.ask{font-size:clamp(16px,4.5vw,20px);font-weight:800;line-height:1.3;margin:0 0 10px;text-align:center}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:15px;background:var(--panel);
+  border:2px solid var(--line);text-align:left;transition:.14s;min-height:56px}
+.opt .num{flex:0 0 34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-size:19px;color:#08101f}
+.opt .txt{font-size:16px;font-weight:750;line-height:1.2}
+.opt:active{transform:scale(.975)}
+.opt.right{background:rgba(62,224,127,.22);border-color:var(--safe)}
+.opt.wrong{background:rgba(255,90,95,.22);border-color:var(--out)}
+.opt .mk{margin-left:auto;font-size:20px;font-weight:900;opacity:0}
+.opt.right .mk,.opt.wrong .mk{opacity:1}
+.opt[disabled]{opacity:.4}
+.opt.right[disabled],.opt.wrong[disabled]{opacity:1}
+.opts.locked .opt{pointer-events:none}
+.coach{display:none;animation:rise .3s ease-out}
+.coach.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.coachbox{border-radius:15px;padding:12px 14px;background:rgba(255,194,74,.1);border:2px solid rgba(255,194,74,.4)}
+.coachbox .hd{font-family:var(--disp);font-size:clamp(15px,4.3vw,19px);text-transform:uppercase;color:var(--amber);
+  line-height:1.1;margin-bottom:6px}
+.coachbox p{margin:0;font-size:15.5px;line-height:1.5;color:#e6ecfa}
+.next{width:100%;margin-top:9px;padding:17px;border-radius:15px;font-family:var(--disp);font-size:19px;
+  letter-spacing:.08em;text-transform:uppercase;color:#2a1a00;
+  background:linear-gradient(180deg,#ffd977,var(--amber-d));box-shadow:0 5px 0 #9d6a08}
+.next:active{transform:translateY(4px);box-shadow:0 1px 0 #9d6a08}
+
+/* ═══════ RESULTS ═══════ */
+#end{overflow-y:auto;padding:22px 18px calc(24px + env(safe-area-inset-bottom))}
+.endwrap{width:100%;max-width:500px;margin:auto}
+.medal{font-size:64px;text-align:center;line-height:1;margin-bottom:6px}
+.rankv{font-family:var(--disp);font-size:clamp(30px,9vw,50px);line-height:.95;text-transform:uppercase;
+  color:var(--amber);text-align:center}
+.rankn{color:#cbd6ee;font-size:15.5px;line-height:1.5;text-align:center;margin:10px 0 20px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.tile{background:var(--panel);border:2px solid var(--line);border-radius:15px;padding:12px 6px;text-align:center}
+.tile .i{font-size:20px;line-height:1}
+.tile .n{font-family:var(--disp);font-size:26px;line-height:1;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.tile .l{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.bar{margin-bottom:12px}
+.bartop{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:750;margin-bottom:5px}
+.bartop .r{color:var(--dim);font-size:12.5px;font-weight:700}
+.track{height:11px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+.fill{height:100%;border-radius:99px;transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.9,.3,1)}
+.note{font-size:15px;line-height:1.55;color:#e6ecfa;background:rgba(255,194,74,.1);border-radius:15px;
+  padding:13px 14px;border:2px solid rgba(255,194,74,.35);margin:18px 0}
+.ghost{width:100%;padding:15px;border-radius:15px;background:var(--panel);border:2px solid var(--line);
+  font-weight:800;font-size:15px;margin-top:8px}
+
+/* ═══════ WIDE ═══════ */
+@media (min-width:840px) and (min-height:520px){
+  .stage{flex-direction:row}
+  .fieldbox{flex:1.3}
+  .controls{flex:0 0 420px;border-top:0;border-left:1px solid var(--line);display:flex;flex-direction:column;
+    justify-content:center;padding:24px}
+  .ask{font-size:21px;margin-bottom:14px}
+  .opt{min-height:64px} .opt .txt{font-size:17px}
+  .team .big{font-size:38px}
+}
+@media (max-height:660px) and (max-width:839px){
+  .opt{min-height:48px;padding:8px 11px} .opt .num{flex-basis:29px;height:29px;font-size:17px}
+  .opt .txt{font-size:14.5px} .ask{font-size:15.5px;margin-bottom:7px}
+  .board{padding:5px 8px} .team{padding:5px 8px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════ START ══════ -->
+<section class="screen on" id="start">
+  <div class="hero">
+    <svg class="seam" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="#fbfbf7" stroke="#d8d8cd" stroke-width="2"/>
+      <path d="M22 14 C40 34 40 66 22 86" fill="none" stroke="#d4302f" stroke-width="3.4" stroke-linecap="round"/>
+      <path d="M78 14 C60 34 60 66 78 86" fill="none" stroke="#d4302f" stroke-width="3.4" stroke-linecap="round"/>
+      <g stroke="#d4302f" stroke-width="2.4" stroke-linecap="round">
+        <path d="M27 25l7-3M29 36l8-2M30 48h8M29 60l8 2M27 75l7 3"/>
+        <path d="M73 25l-7-3M71 36l-8-2M70 48h-8M71 60l-8 2M73 75l-7 3"/></g>
+    </svg>
+    <h1>Diamond<br>IQ</h1>
+    <p class="sub">Where's the play?</p>
+    <p class="blurb">The ball comes to you. Look at the runners. Count the outs. Then tap where you throw it.</p>
+
+    <div class="pickgrp">
+      <div class="picklab">Pick your level</div>
+      <div class="picks" id="pickDiff">
+        <button class="pick sel" data-d="1"><div class="ic">🧢</div><b>Rookie</b><i>ages 8–10</i></button>
+        <button class="pick" data-d="2"><div class="ic">⭐</div><b>All-Star</b><i>ages 11–12</i></button>
+        <button class="pick" data-d="3"><div class="ic">🔥</div><b>Pro</b><i>ages 13+</i></button>
+      </div>
+    </div>
+    <div class="pickgrp">
+      <div class="picklab">How long?</div>
+      <div class="picks" id="pickLen">
+        <button class="pick" data-o="6"><div class="ic">⚡</div><b>Short</b><i>6 outs</i></button>
+        <button class="pick sel" data-o="9"><div class="ic">⚾</div><b>Normal</b><i>9 outs</i></button>
+        <button class="pick" data-o="18"><div class="ic">🏟️</div><b>Long</b><i>18 outs</i></button>
+      </div>
+    </div>
+    <div class="toggles">
+      <button class="tg on" id="tgVoice"><span>🗣️</span><span id="tgVoiceT">Read it to me</span></button>
+      <button class="tg" id="tgClock"><span>⏱️</span><span id="tgClockT">No clock</span></button>
+    </div>
+    <button class="play" id="btnPlay">Play Ball</button>
+    <div class="career" id="career"></div>
+  </div>
+</section>
+
+<!-- ══════ GAME ══════ -->
+<section class="screen" id="game">
+  <div class="board">
+    <div class="team me">
+      <div class="big" id="sOuts">0</div>
+      <div class="col"><div class="lab">Outs you got</div><div class="pips" id="pips"></div></div>
+    </div>
+    <div class="flame" id="flame">🔥</div>
+    <div class="team them">
+      <div class="big" id="sRuns">0</div>
+      <div class="col"><div class="lab">Runs they got</div></div>
+    </div>
+    <div class="pop" id="pop"></div>
+  </div>
+
+  <div class="stage">
+    <div class="fieldbox" id="fieldbox">
+      <div class="btns">
+        <button class="ib" id="btnVoice" aria-label="Read aloud">🗣️</button>
+        <button class="ib" id="btnMute" aria-label="Sound">🔊</button>
+      </div>
+      <svg id="field" viewBox="40 30 920 750" preserveAspectRatio="xMidYMid meet" aria-label="Baseball field">
+        <defs>
+          <radialGradient id="gTurf" cx="50%" cy="88%" r="86%">
+            <stop offset="0%" stop-color="#3f9e52"/><stop offset="55%" stop-color="#2f8143"/>
+            <stop offset="100%" stop-color="#1d5b2e"/>
+          </radialGradient>
+          <linearGradient id="gClay" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c07f52"/><stop offset="100%" stop-color="#9d5f3b"/>
+          </linearGradient>
+          <radialGradient id="gLights" cx="50%" cy="26%" r="62%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity=".16"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="gBall"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#cfd4d8"/></radialGradient>
+          <clipPath id="clipFair"><path d="M500 700 L60 260 A622 622 0 0 1 940 260 Z"/></clipPath>
+          <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="9"/>
+          </filter>
+          <filter id="glow" x="-90%" y="-90%" width="280%" height="280%">
+            <feGaussianBlur stdDeviation="7" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <rect x="40" y="30" width="920" height="750" fill="#123a20"/>
+        <!-- fair territory -->
+        <g clip-path="url(#clipFair)">
+          <path d="M500 700 L60 260 A622 622 0 0 1 940 260 Z" fill="url(#gTurf)"/>
+          <g id="mow" opacity=".085" fill="#ffffff"></g>
+          <path d="M500 700 m-575 0 a575 575 0 0 1 1150 0 Z" fill="none"/>
+          <!-- warning track -->
+          <path d="M500 700 m-622 0 a622 622 0 0 1 1244 0 Z" fill="none"/>
+          <circle cx="500" cy="700" r="622" fill="none" stroke="#a9714b" stroke-width="46"/>
+          <circle cx="500" cy="700" r="622" fill="none" stroke="#0d2a18" stroke-width="12"/>
+          <circle cx="500" cy="700" r="616" fill="none" stroke="#ffc24a" stroke-width="3" opacity=".55"/>
+        </g>
+        <rect x="40" y="30" width="920" height="750" fill="url(#gLights)" pointer-events="none"/>
+
+        <!-- infield dirt -->
+        <path d="M500 700 L309 509 A270 270 0 0 1 691 509 Z" fill="url(#gClay)"/>
+        <!-- infield grass -->
+        <polygon points="500,684 604,580 500,476 396,580" fill="#37954b"/>
+        <polygon points="500,684 604,580 500,476 396,580" fill="none" stroke="#2c7a3d" stroke-width="2"/>
+        <!-- base paths -->
+        <g stroke="#b9724a" stroke-width="21" fill="none" stroke-linejoin="round">
+          <path d="M500 700 L620 580 L500 460 L380 580 Z"/>
+        </g>
+        <g stroke="rgba(255,255,255,.16)" stroke-width="21" fill="none" stroke-linejoin="round" opacity=".35">
+          <path d="M500 700 L620 580 L500 460 L380 580 Z"/>
+        </g>
+        <!-- mound -->
+        <circle cx="500" cy="618" r="46" fill="url(#gClay)"/>
+        <circle cx="500" cy="618" r="46" fill="none" stroke="rgba(0,0,0,.13)" stroke-width="3"/>
+        <rect x="490" y="612" width="20" height="7" rx="1.6" fill="#f4f7f5"/>
+        <!-- catcher's box / plate area -->
+        <circle cx="500" cy="700" r="52" fill="url(#gClay)"/>
+        <!-- foul lines -->
+        <g stroke="#f4f7f5" stroke-width="3.4" opacity=".8">
+          <line x1="500" y1="700" x2="72" y2="272"/>
+          <line x1="500" y1="700" x2="928" y2="272"/>
+        </g>
+        <!-- bases -->
+        <g id="bases">
+          <rect x="608" y="568" width="24" height="24" rx="2.5" fill="#f4f7f5" transform="rotate(45 620 580)"/>
+          <rect x="488" y="448" width="24" height="24" rx="2.5" fill="#f4f7f5" transform="rotate(45 500 460)"/>
+          <rect x="368" y="568" width="24" height="24" rx="2.5" fill="#f4f7f5" transform="rotate(45 380 580)"/>
+          <path d="M486 690 h28 v11 l-14 12 l-14 -12 Z" fill="#f4f7f5"/>
+        </g>
+
+        <g id="gFielders"></g>
+        <g id="gRunners"></g>
+        <g id="gTargets"></g>
+        <g id="gTrail"></g>
+        <g id="gBall" opacity="0">
+          <ellipse id="ballShadow" cx="0" cy="0" rx="9" ry="4" fill="rgba(0,0,0,.34)"/>
+          <g id="ballBody">
+            <circle r="10" fill="url(#gBall)"/>
+            <path d="M-5 -7 A9 9 0 0 0 -5 7" fill="none" stroke="#d4302f" stroke-width="1.6"/>
+            <path d="M5 -7 A9 9 0 0 1 5 7" fill="none" stroke="#d4302f" stroke-width="1.6"/>
+          </g>
+        </g>
+        <g id="gFx"></g>
+      </svg>
+      <div class="sitbar" id="sitBar">
+        <div class="outsrow" id="sitOuts"></div>
+        <b id="sitTxt"></b>
+      </div>
+      <div class="setup" id="setup"><div class="setupcard">
+        <div class="l">Look at the field</div>
+        <div class="t" id="setupTxt"></div>
+        <div class="o" id="setupOuts"></div>
+      </div></div>
+      <div class="overlay"><div class="callout" id="callout"><div class="big"></div><div class="small"></div></div></div>
+    </div>
+
+    <div class="controls">
+      <div class="clock" id="clock"><i id="clockFill"></i></div>
+      <p class="ask" id="ask">Get ready…</p>
+      <div class="opts" id="opts"></div>
+      <div class="coach" id="coach">
+        <div class="coachbox"><div class="hd" id="coachHd"></div><p id="coachTxt"></p></div>
+        <button class="next" id="btnNext">Next Play</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ RESULTS ══════ -->
+<section class="screen" id="end">
+  <div class="endwrap">
+    <div class="medal" id="medal">🏅</div>
+    <div class="rankv" id="rankName">—</div>
+    <div class="rankn" id="rankLine"></div>
+    <div class="tiles">
+      <div class="tile"><div class="i">⚾</div><div class="n" id="tOuts">0</div><div class="l">Outs</div></div>
+      <div class="tile"><div class="i">🏃</div><div class="n" id="tRuns">0</div><div class="l">Runs</div></div>
+      <div class="tile"><div class="i">🔥</div><div class="n" id="tStreak">0</div><div class="l">In a row</div></div>
+    </div>
+    <div id="bars"></div>
+    <div class="note" id="endNote"></div>
+    <button class="play" id="btnAgain">Play Again</button>
+    <button class="ghost" id="btnHome">Change level</button>
+  </div>
+</section>
+</div>
+
+<script>
+"use strict";
+/* ═══════ FIELD GEOMETRY (unchanged) ═══════ */
+const P = {
+  home:[500,700], first:[620,580], second:[500,460], third:[380,580], mound:[500,618],
+  F1:[500,616], F2:[500,748], F3:[652,548], F4:[588,476], F5:[362,545],
+  F6:[414,476], F7:[262,300], F8:[500,232], F9:[738,300]
+};
+const POS = {F1:1,F2:2,F3:3,F4:4,F5:5,F6:6,F7:7,F8:8,F9:9};
+const NS="http://www.w3.org/2000/svg";
+const $=s=>document.querySelector(s);
+const el=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
+const OPTC=["#3ba7ff","#ffc24a","#ff5fa8"];
+
+function anchorFor(key,you){
+  const m={first:"first",second:"second",third:"third",home:"home",pitcher:"mound",
+           cut2:"F4",cut6:"F6",cut3:"F3",cut5:"F5"};
+  if(key==="tagbase"||key==="hold"||key==="tagrunner") return P[you];
+  return m[key]?P[m[key]]:null;
+}
+/* two label sets: throwing plays vs "where do you run" plays */
+const L_THROW={first:"Throw to 1st",second:"Throw to 2nd",third:"Throw to 3rd",home:"Throw HOME",
+  pitcher:"Give it to the pitcher",tagbase:"Step on the bag",tagrunner:"Chase him and tag him",
+  hold:"Just hold the ball",cut2:"Throw to the 2nd baseman",cut6:"Throw to the shortstop",
+  cut3:"Throw to the 1st baseman",cut5:"Throw to the 3rd baseman"};
+const L_GO={first:"Run to 1st base",second:"Run to 2nd base",third:"Run to 3rd base",home:"Run behind home plate"};
+const label=(k,s)=>(s.labels&&s.labels[k])||((s.mode==="go"&&L_GO[k])?L_GO[k]:L_THROW[k])||k;
+/* spoken version of each answer, for the read-aloud */
+const SPEAK={first:"first base",second:"second base",third:"third base",home:"home plate",
+  pitcher:"the pitcher",tagbase:"step on the bag",tagrunner:"tag the runner",hold:"hold the ball",
+  cut2:"the second baseman",cut6:"the shortstop",cut3:"the first baseman",cut5:"the third baseman"};
+
+/* ═══════ SCENARIOS — plain words, one idea each ═══════ */
+const BANK=[
+/* ── ROOKIE ── */
+{d:1,tag:"Who has to run",you:"F6",hit:"ground",r:[0,0,0],outs:0,
+ sit:"Nobody on base",ask:"Ground ball to you at shortstop.",
+ opts:["first","second","home"],ans:"first",
+ big:"Nobody on? Throw to first.",
+ why:"The only runner is the batter, and he is running to first base. Throw there."},
+
+{d:1,tag:"Counting outs",you:"F3",hit:"ground",r:[0,0,0],outs:2,
+ sit:"Nobody on base",ask:"Slow ground ball to you at first base. You are two steps from the bag.",
+ opts:["tagbase","second","pitcher"],ans:"tagbase",
+ big:"You're closer. Just step on it.",
+ why:"You can beat the runner to the bag by yourself. No throw needed. Step on first."},
+
+{d:1,tag:"Who has to run",you:"F1",hit:"ground",r:[1,1,1],outs:0,
+ sit:"Bases loaded",ask:"Ground ball right back to you on the mound.",
+ opts:["home","first","second"],ans:"home",
+ big:"Bases loaded? Get the run at home.",
+ why:"Every runner has to run, so the man on third has to go home. Throw to the catcher and stop the run."},
+
+{d:1,tag:"Who has to run",you:"F4",hit:"ground",r:[1,0,0],outs:2,
+ sit:"Runner on 1st",ask:"Ground ball to you at second base. You are two steps from the bag.",
+ opts:["tagbase","first","third"],ans:"tagbase",
+ big:"He has to run. Step on second.",
+ why:"The batter is running to first, so the runner has to leave first base. You are already there. Step on the bag."},
+
+{d:1,tag:"Counting outs",you:"F6",hit:"ground",r:[0,0,1],outs:2,
+ sit:"Runner on 3rd",ask:"Ground ball to you at shortstop. The runner takes off for home.",
+ opts:["first","home","third"],ans:"first",
+ big:"Two outs? Take the easy one.",
+ why:"Let him run. If you get the batter at first for the third out, his run does not count."},
+
+{d:1,tag:"Who has to run",you:"F5",hit:"ground",r:[1,0,0],outs:1,
+ sit:"Runner on 1st",ask:"Slow ground ball to you at third base. You have to run in and grab it.",
+ opts:["first","second","third"],ans:"first",
+ big:"Slow ball? Take the sure out.",
+ why:"The ball took too long to get to you. The runner is already at second. Throw to first."},
+
+{d:1,tag:"Who has to run",you:"F3",hit:"ground",r:[0,1,0],outs:1,
+ sit:"Runner on 2nd",ask:"Ground ball to you at first base, right next to the bag.",
+ opts:["tagbase","third","second"],ans:"tagbase",
+ big:"Nobody on first? He can stay put.",
+ why:"The runner on second does not have to run. You can't force him out. Step on first and take the easy out."},
+
+{d:1,tag:"Counting outs",you:"F6",hit:"line",r:[0,0,0],outs:1,
+ sit:"Nobody on base",ask:"Line drive! You catch it in the air at shortstop.",
+ opts:["pitcher","first","second"],ans:"pitcher",
+ big:"You caught it. That's the out.",
+ why:"The batter is out as soon as you catch it. There is nobody else to get. Give the ball back to the pitcher."},
+
+{d:1,tag:"Who has to run",you:"F2",hit:"bunt",r:[1,1,1],outs:1,
+ sit:"Bases loaded",ask:"The ball dribbles in front of the plate. You grab it.",
+ opts:["tagbase","first","third"],ans:"tagbase",
+ big:"Standing on the out? Take it.",
+ why:"The runner on third has to run home. Home plate is right under your feet. Step on it."},
+
+{d:1,tag:"Catches and tag ups",you:"F8",hit:"fly",r:[1,0,0],outs:1,
+ sit:"Runner on 1st",ask:"Fly ball to center field. You catch it.",
+ opts:["second","home","third"],ans:"second",
+ big:"After the catch, throw to second.",
+ why:"The runner ran when the ball was hit. Throw to second base so he can't steal the extra base."},
+
+{d:1,tag:"Infield in or back",you:"F4",hit:"ground",r:[0,0,1],outs:0,extra:"Infield is back",
+ sit:"Runner on 3rd",ask:"Ground ball to you at second base.",
+ opts:["first","home","second"],ans:"first",
+ big:"Playing back? Take the out.",
+ why:"Your team is standing deep, so the run is going to score. That is okay. Get the out at first base."},
+
+/* ── ALL-STAR ── */
+{d:2,tag:"Who has to run",you:"F4",hit:"ground",r:[1,1,0],outs:2,
+ sit:"Runners on 1st and 2nd",ask:"Ground ball to you at second base. You are three steps from the bag.",
+ opts:["tagbase","first","third"],ans:"tagbase",
+ big:"Everybody has to run. Take the closest base.",
+ why:"Both runners have to run, so any base is an out. Second base is closest. Step on it and the inning is over."},
+
+{d:2,tag:"Who has to run",you:"F4",hit:"ground",r:[1,1,0],outs:2,
+ sit:"Runners on 1st and 2nd",ask:"Ground ball to your right. It pulls you toward first base.",
+ opts:["first","second","third"],ans:"first",
+ big:"Go where the ball takes you.",
+ why:"Second base is behind you now. First base is a force out too. Throw the way you are already moving."},
+
+{d:2,tag:"Double plays",you:"F6",hit:"ground",r:[1,0,1],outs:1,
+ sit:"Runners on 1st and 3rd",ask:"Ground ball right at you at shortstop.",
+ opts:["second","home","first"],ans:"second",
+ big:"Get two outs, not one.",
+ why:"The runner on first has to run. Throw to second to start a double play. Two outs ends the inning."},
+
+{d:2,tag:"Double plays",you:"F6",hit:"ground",r:[1,1,1],outs:1,
+ sit:"Bases loaded",ask:"Hard ground ball right at you at shortstop.",
+ opts:["second","home","third"],ans:"second",
+ big:"Two outs beats one run.",
+ why:"Throwing home only gets one out. Second base can get two and end the inning."},
+
+{d:2,tag:"Watching the runner",you:"F5",hit:"ground",r:[0,1,0],outs:0,
+ sit:"Runner on 2nd",ask:"Ground ball right at you at third base.",
+ opts:["first","second","third"],ans:"first",
+ big:"Look him back, then throw to first.",
+ why:"He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first."},
+
+{d:2,tag:"Catches and tag ups",you:"F9",hit:"fly",r:[0,0,1],outs:1,
+ sit:"Runner on 3rd",ask:"Fly ball to right field. You catch it and the runner runs home.",
+ opts:["home","third","second"],ans:"home",
+ big:"He's going home. Throw home.",
+ why:"He waited for your catch, then took off. Throw to the catcher and try to beat him to the plate."},
+
+{d:2,tag:"Counting outs",you:"F7",hit:"fly",r:[0,0,1],outs:2,
+ sit:"Runner on 3rd",ask:"Fly ball to left field. You catch it.",
+ opts:["hold","home","third"],ans:"hold",
+ big:"Count the outs first.",
+ why:"There were already two outs. Your catch was the third one. The inning is over, so there is nobody to throw at."},
+
+{d:2,tag:"Catches and tag ups",you:"F9",hit:"fly",r:[1,0,0],outs:1,
+ sit:"Runner on 1st",ask:"Short fly ball to right field. You catch it. The runner is already near second.",
+ opts:["first","second","home"],ans:"first",
+ big:"He left early. Throw behind him.",
+ why:"He has to go back and touch first base. Throw to first before he gets there and he is out too."},
+
+{d:2,tag:"Bunts",you:"F1",hit:"bunt",r:[1,0,0],outs:0,
+ sit:"Runner on 1st",ask:"The batter bunts it down the first base line. You grab it.",
+ opts:["first","second","third"],ans:"first",
+ big:"Take the out they give you.",
+ why:"The runner got a head start on the bunt. Don't chase him. Throw to first for the sure out."},
+
+{d:2,tag:"Bunts",you:"F5",hit:"bunt",r:[1,1,0],outs:0,
+ sit:"Runners on 1st and 2nd",ask:"The batter bunts up the third base line. You charge in and grab it.",
+ opts:["first","third","second"],ans:"first",
+ big:"You left your base. Throw to first.",
+ why:"You ran off third base to get the ball. The shortstop is running over to cover it. First base is the safe out."},
+
+{d:2,tag:"Long throws",you:"F7",hit:"fly",r:[0,1,0],outs:1,
+ sit:"Runner on 2nd",ask:"The ball gets past you in left field. The runner rounds third and heads home.",
+ opts:["home","third","second"],ans:"home",
+ big:"He's going home. Throw home.",
+ why:"Throw low and hard toward the plate. Aim at the third baseman standing in the middle, so he can grab it if the throw is off."},
+
+{d:2,tag:"Where to run",you:"F9",hit:"line",r:[1,0,0],outs:1,mode:"go",arrows:false,
+ sit:"Runner on 1st",ask:"The ball is hit to left field. You play right field. Where do YOU run?",
+ opts:["second","first","home"],ans:"second",
+ big:"Back up the base.",
+ why:"Outfielders never stand still. Run in behind second base. If the throw gets past everybody, you are there to stop it."},
+
+{d:2,tag:"Where to run",you:"F1",hit:"fly",r:[0,1,0],outs:1,mode:"go",arrows:false,
+ sit:"Runner on 2nd",ask:"Base hit to center. The throw is going home. You are the pitcher. Where do YOU run?",
+ opts:["home","second","first"],ans:"home",
+ big:"Pitchers back up the throw.",
+ why:"Run behind the catcher and stand way back. If the throw gets past him, you stop it and nobody moves up."},
+
+{d:2,tag:"Rundowns",you:"F6",hit:"ground",r:[0,1,0],outs:1,arrows:false,
+ sit:"Runner stuck between 2nd and 3rd",ask:"You have the ball. The runner is caught in the middle.",
+ opts:["second","third","tagrunner"],ans:"second",
+ big:"Run him back the way he came.",
+ why:"Chase him toward second base, not third. Then make one hard throw. The worst thing that happens is he ends up where he started."},
+
+/* ── PRO ── */
+{d:3,tag:"Infield fly",you:"F6",hit:"pop",r:[1,1,0],outs:1,arrows:false,
+ sit:"Runners on 1st and 2nd",ask:"Pop up over the mound. The umpire yells INFIELD FLY — the batter is out.",
+ opts:["hold","second","third"],ans:"hold",
+ big:"Batter's already out. Just catch it.",
+ why:"The umpire called him out so you can't drop it on purpose. Now nobody has to run. Catch the ball and hold it."},
+
+{d:3,tag:"Long throws",you:"F8",hit:"fly",r:[0,1,0],outs:1,
+ sit:"Runner on 2nd",ask:"Deep fly ball to center. You catch it. The runner tags up and runs to third.",
+ opts:["third","home","second"],ans:"third",
+ big:"He's only going one base. Throw to third.",
+ why:"He is not going home, so home is the wrong throw. Throw toward third base. The shortstop runs out to help you."},
+
+{d:3,tag:"Long throws",you:"F9",hit:"line",r:[1,0,0],outs:0,
+ sit:"Runner on 1st",ask:"The ball rolls into the corner in right field. You are very far from home plate.",
+ opts:["cut2","home","third"],ans:"cut2",
+ big:"Too far? Hit your relay man.",
+ why:"You can't throw that far on a line. The second baseman runs out to meet you. Throw to him and he throws the rest of the way."},
+
+{d:3,tag:"Tricky rules",you:"F2",hit:"bunt",r:[0,0,0],outs:2,arrows:false,
+ sit:"Nobody on base",ask:"Strike three! But the ball bounces off your glove and rolls away.",
+ opts:["first","hold","third"],ans:"first",
+ big:"Dropped strike three? He can run.",
+ why:"If you drop strike three and first base is empty, the batter is allowed to run. Go get the ball and throw to first."},
+
+{d:3,tag:"Who has to run",you:"F3",hit:"ground",r:[0,1,0],outs:1,
+ sit:"Runner on 2nd",ask:"The ball pulls you way off of first base. The runner heads for third.",
+ opts:["first","third","second"],ans:"first",
+ labels:{first:"Throw to 1st base"},
+ big:"The pitcher covers first.",
+ why:"You are too far from the bag to get back in time. The pitcher runs over to cover first on every ball hit your way. Toss it to him, chest high. Forget the runner."},
+
+{d:3,tag:"Watching the runner",you:"F5",hit:"ground",r:[1,0,1],outs:1,extra:"Tie game",
+ sit:"Runners on 1st and 3rd",ask:"Hard ground ball to you at third. The runner on third takes off for home!",
+ opts:["home","first","second"],ans:"home",
+ big:"He ran. Get him at the plate.",
+ why:"He can't stop once he goes. You have the ball and he doesn't. Throw home and take the run away."},
+
+{d:3,tag:"Who has to run",you:"F5",hit:"ground",r:[1,0,1],outs:1,
+ sit:"Runners on 1st and 3rd",ask:"Hard ground ball to you at third base. The runner on third stays on the bag.",
+ opts:["second","tagbase","home"],ans:"second",
+ big:"Second base is empty, so third is not a force.",
+ why:"Stepping on third does nothing — he does not have to run. The runner on first DOES have to run. Throw to second."},
+
+{d:3,tag:"Infield in or back",you:"F6",hit:"ground",r:[0,0,1],outs:0,extra:"Infield is in",
+ sit:"Runner on 3rd",ask:"Hard ground ball to you at shortstop.",
+ opts:["home","first","second"],ans:"home",
+ big:"Playing in? Stop the run.",
+ why:"Your team moved up close for one reason: to keep him from scoring. Throw home."},
+
+{d:3,tag:"Where to run",you:"F6",hit:"line",r:[1,0,0],outs:1,mode:"go",arrows:false,
+ sit:"Runner on 1st",ask:"Base hit to right field. You play shortstop. Where do YOU run?",
+ opts:["second","third","first"],ans:"second",
+ big:"Somebody has to cover the bag.",
+ why:"The second baseman ran out to the grass to take the relay throw. That leaves second base empty. You cover it."},
+
+{d:3,tag:"Long throws",you:"F8",hit:"line",r:[0,1,0],outs:2,
+ sit:"Runner on 2nd",ask:"Base hit to center field. He rounds third and sprints for home.",
+ opts:["home","cut2","second"],ans:"home",
+ big:"Two outs? Let it rip.",
+ why:"There is nothing to save the ball for. Throw hard toward the plate on one bounce."},
+
+{d:3,tag:"Counting outs",you:"F4",hit:"ground",r:[1,1,1],outs:2,
+ sit:"Bases loaded",ask:"Slow ground ball to your right at second base. You run in and grab it.",
+ opts:["tagbase","first","home"],ans:"tagbase",
+ big:"Slow ball? Take the closest base.",
+ why:"You might not beat the batter to first. Everybody has to run, so second base is an out too — and it is much closer."}
+];
+
+/* ═══════ SOUND ═══════ */
+const SFX={ctx:null,on:true,
+ init(){if(!this.ctx){try{this.ctx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+   if(this.ctx&&this.ctx.state==="suspended")this.ctx.resume();},
+ tone(f,d,t="triangle",v=.16,sl=0){if(!this.on||!this.ctx)return;
+   const c=this.ctx,n=c.currentTime,o=c.createOscillator(),g=c.createGain();
+   o.type=t;o.frequency.setValueAtTime(f,n);
+   if(sl)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+sl),n+d);
+   g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(v,n+.012);
+   g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g).connect(c.destination);o.start(n);o.stop(n+d+.05);},
+ noise(d=.09,v=.22,hp=900){if(!this.on||!this.ctx)return;
+   const c=this.ctx,n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),ch=b.getChannelData(0);
+   for(let i=0;i<n;i++)ch[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.4);
+   const s=c.createBufferSource();s.buffer=b;
+   const f=c.createBiquadFilter();f.type="highpass";f.frequency.value=hp;
+   const g=c.createGain();g.gain.value=v;s.connect(f).connect(g).connect(c.destination);s.start();},
+ crack(){this.noise(.12,.3,1400);this.tone(210,.09,"square",.09,-90);},
+ mitt(){this.noise(.07,.16,600);},
+ good(){this.tone(660,.1,"triangle",.16);setTimeout(()=>this.tone(880,.14,"triangle",.16),85);
+   setTimeout(()=>this.tone(1180,.2,"triangle",.13),175);},
+ bad(){this.tone(200,.3,"sawtooth",.13,-110);},
+ tick(){this.tone(1500,.035,"square",.06);},
+ whoosh(){this.noise(.16,.1,400);},
+ cheer(){this.noise(.7,.09,300);}};
+
+/* ═══════ READ ALOUD ═══════ */
+const VOICE={on:true,v:null,ready:!!window.speechSynthesis,
+ pick(){if(!this.ready)return;const vs=speechSynthesis.getVoices();if(!vs.length)return;
+   this.v=vs.find(v=>/^en-US/.test(v.lang)&&/samantha|zira|google us|aria|jenny/i.test(v.name))
+        ||vs.find(v=>/^en-US/.test(v.lang))||vs.find(v=>/^en/.test(v.lang))||null;},
+ say(t,rate=.97){if(!this.on||!this.ready||!t)return;
+   try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
+     if(this.v)u.voice=this.v;u.rate=rate;u.pitch=1.04;speechSynthesis.speak(u);}catch(e){}},
+ stop(){try{if(this.ready)speechSynthesis.cancel();}catch(e){}}};
+if(VOICE.ready){VOICE.pick();speechSynthesis.onvoiceschanged=()=>VOICE.pick();}
+const plain=t=>t.replace(/1st/g,"first").replace(/2nd/g,"second").replace(/3rd/g,"third")
+                .replace(/—/g,",").replace(/\s+/g," ").trim();
+
+/* ═══════ PARTICLES ═══════ */
+const gFx=$("#gFx");let parts=[];
+function burst(x,y,{n=18,color="#fff",spd=210,life=.75,size=5,grav=340,spread=Math.PI*2,dir=-Math.PI/2}={}){
+  for(let i=0;i<n;i++){const a=dir+(Math.random()-.5)*spread,v=spd*(.45+Math.random()*.9);
+    const c=el("circle",{r:size*(.5+Math.random()*.8),fill:Array.isArray(color)?color[i%color.length]:color});
+    gFx.appendChild(c);parts.push({e:c,x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,t:0,life:life*(.6+Math.random()*.7),grav});}
+}
+function ring(x,y,color="#fff",r0=8,r1=90,dur=.5,w=5){
+  const c=el("circle",{cx:x,cy:y,r:r0,fill:"none",stroke:color,"stroke-width":w});
+  gFx.appendChild(c);parts.push({e:c,ring:true,x,y,r0,r1,t:0,life:dur,w});
+}
+function stepParts(dt){
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.t+=dt;const k=p.t/p.life;
+    if(k>=1){p.e.remove();parts.splice(i,1);continue;}
+    if(p.ring){p.e.setAttribute("r",p.r0+(p.r1-p.r0)*(1-Math.pow(1-k,2.4)));
+      p.e.setAttribute("opacity",(1-k).toFixed(3));p.e.setAttribute("stroke-width",(p.w*(1-k*.7)).toFixed(2));}
+    else{p.vy+=p.grav*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.e.setAttribute("cx",p.x.toFixed(1));p.e.setAttribute("cy",p.y.toFixed(1));
+      p.e.setAttribute("opacity",(1-k*k).toFixed(3));}}
+}
+
+/* ═══════ FIELD DRAWING ═══════ */
+(function mow(){const g=$("#mow");
+  for(let r=300;r<640;r+=46)g.appendChild(el("circle",{cx:500,cy:700,r:r,fill:"none",stroke:"#fff","stroke-width":23}));})();
+(function baseLabels(){ // chalk names so "throw to 2nd" maps to a real bag
+  const g=el("g",{opacity:".7"});
+  [["1st",676,616],["2nd",500,420],["3rd",324,616],["HOME",596,732]].forEach(([t,x,y])=>{
+    const n=el("text",{x,y,"text-anchor":"middle","font-size":19,"font-weight":"800",fill:"#fff",
+      stroke:"rgba(0,0,0,.45)","stroke-width":3,"paint-order":"stroke"});
+    n.textContent=t;g.appendChild(n);});
+  $("#bases").after(g);})();
+
+const gF=$("#gFielders"),gR=$("#gRunners"),gT=$("#gTargets"),gTrail=$("#gTrail");
+const gBall=$("#gBall"),ballBody=$("#ballBody"),ballShadow=$("#ballShadow");
+
+function drawFielders(you){
+  gF.textContent="";
+  for(const k in POS){
+    const [x,y]=P[k],me=k===you;
+    const g=el("g",{transform:`translate(${x},${y})`,opacity:me?1:.82});
+    if(me){const h=el("circle",{r:26,fill:"none",stroke:"#ffc24a","stroke-width":4});
+      h.appendChild(el("animate",{attributeName:"r",values:"23;32;23",dur:"1.5s",repeatCount:"indefinite"}));
+      g.appendChild(h);}
+    g.appendChild(el("circle",{r:15,fill:me?"#ffc24a":"#e9edf7",stroke:me?"#8a5a00":"#4a5b80","stroke-width":2}));
+    const t=el("text",{y:5,"text-anchor":"middle","font-size":15,"font-weight":"800",fill:me?"#3a2400":"#1a2440"});
+    t.textContent=POS[k];g.appendChild(t);
+    if(me){const lb=el("text",{y:-36,"text-anchor":"middle","font-size":18,"font-weight":"800",fill:"#ffc24a",
+      stroke:"rgba(0,0,0,.5)","stroke-width":3.5,"paint-order":"stroke"});lb.textContent="YOU";g.appendChild(lb);}
+    gF.appendChild(g);
+  }
+}
+let runnerEls=[];
+function drawRunners(r){
+  gR.textContent="";runnerEls=[];
+  const bases=[P.first,P.second,P.third],nexts=[P.second,P.third,P.home];
+  r.forEach((on,i)=>{if(!on)return;
+    const g=el("g",{transform:`translate(${bases[i][0]},${bases[i][1]})`});
+    g.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
+    g.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
+    gR.appendChild(g);runnerEls.push({g,from:bases[i],to:nexts[i]});});
+  const b=el("g",{transform:`translate(${P.home[0]},${P.home[1]})`,opacity:0});
+  b.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
+  b.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
+  gR.appendChild(b);runnerEls.push({g:b,from:P.home,to:P.first,batter:true});
+}
+function moveRunners(k,style){
+  runnerEls.forEach(r=>{
+    let f=style==="hold"?Math.sin(k*Math.PI)*.13:k*(r.batter?.62:.66);
+    if(r.batter&&style==="hold")f=k*.3;
+    const x=r.from[0]+(r.to[0]-r.from[0])*f,y=r.from[1]+(r.to[1]-r.from[1])*f;
+    r.g.setAttribute("transform",`translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    if(r.batter)r.g.setAttribute("opacity",Math.min(1,k*4).toFixed(2));});
+}
+/* numbered + colour-matched targets.
+   Badge offsets are hand-placed so a number never lands on a fielder or a chalk label. */
+const BADGE={first:[-30,30],second:[0,42],third:[30,30],home:[-56,12],pitcher:[0,44],
+  cut2:[26,-34],cut6:[-26,-34],cut3:[30,-29],cut5:[-30,-29]};
+const BADGEF={F1:[0,44],F2:[56,14],F3:[30,-29],F4:[26,-34],F5:[-30,-29],
+  F6:[-26,-34],F7:[-19,-37],F8:[0,-42],F9:[19,-37]};
+function drawTargets(opts,s,onPick){
+  gT.textContent="";
+  opts.forEach((k,i)=>{
+    const a=anchorFor(k,s.you);if(!a)return;
+    const col=OPTC[i%3];
+    const off=(k==="tagbase"||k==="hold"||k==="tagrunner")?BADGEF[s.you]:(BADGE[k]||[0,42]);
+    const bx=a[0]+off[0],by=a[1]+off[1];
+    const g=el("g",{class:"hit-tgt"});
+    g.appendChild(el("circle",{cx:a[0],cy:a[1],r:44,fill:col,"fill-opacity":".001"}));
+    g.appendChild(el("circle",{cx:a[0],cy:a[1],r:30,fill:col,"fill-opacity":".18",stroke:col,"stroke-width":4}));
+    const p=el("circle",{cx:a[0],cy:a[1],r:30,fill:"none",stroke:col,"stroke-width":3});
+    p.appendChild(el("animate",{attributeName:"r",values:"30;46;30",dur:"1.9s",repeatCount:"indefinite"}));
+    p.appendChild(el("animate",{attributeName:"opacity",values:".7;0;.7",dur:"1.9s",repeatCount:"indefinite"}));
+    g.appendChild(p);
+    g.appendChild(el("line",{x1:a[0],y1:a[1],x2:bx,y2:by,stroke:col,"stroke-width":3,opacity:.55}));
+    g.appendChild(el("circle",{cx:bx,cy:by,r:18,fill:col,stroke:"#08101f","stroke-width":2.5}));
+    const n=el("text",{x:bx,y:by+8,"text-anchor":"middle","font-size":23,"font-weight":"800",fill:"#08101f"});
+    n.textContent=i+1;g.appendChild(n);
+    g.appendChild(el("circle",{cx:bx,cy:by,r:26,fill:col,"fill-opacity":".001"}));
+    g.addEventListener("click",e=>{e.stopPropagation();onPick(k);});
+    gT.appendChild(g);
+  });
+}
+const clearTargets=()=>gT.textContent="";
+
+/* force arrows — the "who has to run" teaching aid */
+function forceArrows(s){
+  const out=[];
+  const [a,b,c]=s.r;
+  out.push([P.home,P.first]);            // batter always
+  if(a) out.push([P.first,P.second]);
+  if(a&&b) out.push([P.second,P.third]);
+  if(a&&b&&c) out.push([P.third,P.home]);
+  out.forEach(([f,t],i)=>{
+    const dx=t[0]-f[0],dy=t[1]-f[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;
+    const x1=f[0]+ux*26,y1=f[1]+uy*26,x2=t[0]-ux*30,y2=t[1]-uy*30;
+    const ln=el("line",{x1,y1,x2,y2,stroke:"#3ee07f","stroke-width":7,"stroke-linecap":"round",opacity:0});
+    ln.appendChild(el("animate",{attributeName:"opacity",values:"0;.95",dur:".3s",begin:(i*.13)+"s",fill:"freeze"}));
+    gFx.appendChild(ln);
+    const ang=Math.atan2(dy,dx)*180/Math.PI;
+    const hd=el("polygon",{points:"0,-11 20,0 0,11",fill:"#3ee07f",opacity:0,
+      transform:`translate(${x2},${y2}) rotate(${ang})`});
+    hd.appendChild(el("animate",{attributeName:"opacity",values:"0;.95",dur:".3s",begin:(i*.13)+"s",fill:"freeze"}));
+    gFx.appendChild(hd);
+  });
+  const t=el("text",{x:500,y:775,"text-anchor":"middle","font-size":22,"font-weight":"800",fill:"#3ee07f",
+    stroke:"rgba(0,0,0,.6)","stroke-width":4,"paint-order":"stroke",opacity:0});
+  t.textContent="THESE RUNNERS HAVE TO RUN";
+  t.appendChild(el("animate",{attributeName:"opacity",values:"0;1",dur:".35s",begin:".45s",fill:"freeze"}));
+  gFx.appendChild(t);
+}
+
+/* ball flight */
+let trailPts=[];
+function setBall(x,y,gy){
+  gBall.setAttribute("opacity",1);
+  ballBody.setAttribute("transform",`translate(${x.toFixed(1)},${y.toFixed(1)})`);
+  const h=Math.max(0,gy-y),sc=1+h/240;
+  ballShadow.setAttribute("cx",x.toFixed(1));ballShadow.setAttribute("cy",gy.toFixed(1));
+  ballShadow.setAttribute("rx",(9*sc).toFixed(1));ballShadow.setAttribute("ry",(4*sc).toFixed(1));
+  ballShadow.setAttribute("opacity",(.36/Math.max(1,sc*.9)).toFixed(2));
+}
+function pushTrail(x,y){const c=el("circle",{cx:x,cy:y,r:7,fill:"#fff",opacity:.5});gTrail.appendChild(c);trailPts.push({e:c,t:0});}
+function stepTrail(dt){for(let i=trailPts.length-1;i>=0;i--){const p=trailPts[i];p.t+=dt;const k=p.t/.34;
+  if(k>=1){p.e.remove();trailPts.splice(i,1);continue;}
+  p.e.setAttribute("opacity",(.45*(1-k)).toFixed(3));p.e.setAttribute("r",(7*(1-k*.75)).toFixed(1));}}
+const clearTrail=()=>{trailPts.forEach(p=>p.e.remove());trailPts=[];};
+function flyBall(from,to,dur,arc,done,runStyle){
+  const t0=performance.now();
+  (function frame(now){
+    const k=Math.min(1,(now-t0)/(dur*1000));
+    const x=from[0]+(to[0]-from[0])*k,gy=from[1]+(to[1]-from[1])*k,y=gy-arc*4*k*(1-k);
+    setBall(x,y,gy);
+    if(k<1&&k>.03)pushTrail(x,y);
+    if(runStyle)moveRunners(k,runStyle);
+    if(k<1)requestAnimationFrame(frame);else done&&done();
+  })(t0);
+}
+let last=performance.now();
+(function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;stepParts(dt);stepTrail(dt);requestAnimationFrame(loop);})(last);
+
+/* ═══════ GAME ═══════ */
+const G={diff:1,target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
+  pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99};
+const LIMITS={1:22,2:18,3:14};
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function buildDeck(d){
+  const core=shuffle(BANK.filter(s=>s.d===d)),lo=shuffle(BANK.filter(s=>s.d<d)),hi=shuffle(BANK.filter(s=>s.d>d));
+  let deck=core.concat(lo,hi);
+  while(deck.length<G.target+6)deck=deck.concat(shuffle(BANK.slice()));
+  return deck;
+}
+function balls(n,host,size){
+  host.textContent="";
+  for(let i=0;i<3;i++){const b=document.createElement("i");b.className="ob"+(i<n?" f":"");
+    if(size){b.style.width=size;b.style.height=size;}host.appendChild(b);}
+  const e=document.createElement("em");e.textContent=n===1?"1 OUT":n+" OUTS";host.appendChild(e);
+}
+function paintBoard(){
+  $("#sOuts").textContent=G.outs;$("#sRuns").textContent=G.runs;
+  $("#flame").classList.toggle("on",G.streak>=3);
+  const p=$("#pips");
+  if(p.children.length!==G.target){p.textContent="";
+    for(let i=0;i<G.target;i++){const d=document.createElement("i");d.className="pip";p.appendChild(d);}}
+  [...p.children].forEach((c,i)=>c.classList.toggle("f",i<G.outs));
+}
+function popPts(n){
+  const e=$("#pop");e.textContent="+"+n;e.classList.remove("go");void e.offsetWidth;e.classList.add("go");
+}
+/* clock */
+function startClock(){
+  if(!G.useClock){$("#clock").classList.remove("on");return;}
+  $("#clock").classList.add("on");
+  G.tStart=performance.now();G.ticked=99;
+  const bar=$("#clock"),fill=$("#clockFill");bar.classList.remove("warn","crit");
+  cancelAnimationFrame(G.tRaf);
+  (function f(now){
+    if(G.answered)return;
+    const left=G.limit-(now-G.tStart)/1000,k=Math.max(0,left/G.limit);
+    fill.style.transform=`scaleX(${k})`;
+    bar.classList.toggle("warn",k<=.45&&k>.2);bar.classList.toggle("crit",k<=.2);
+    const sec=Math.ceil(left);
+    if(sec<=3&&sec>0&&sec<G.ticked){G.ticked=sec;SFX.tick();}
+    if(left<=0){answer(null);return;}
+    G.tRaf=requestAnimationFrame(f);
+  })(performance.now());
+}
+const stopClock=()=>{G.answered=true;cancelAnimationFrame(G.tRaf);};
+
+function nextPlay(){
+  const s=G.deck[G.i%G.deck.length];G.i++;G.cur=s;G.answered=false;
+  clearTargets();clearTrail();gFx.textContent="";
+  $("#coach").classList.remove("on");$("#opts").classList.remove("locked");
+  $("#callout").classList.remove("show","good","bad");
+  $("#clockFill").style.transform="scaleX(1)";$("#clock").classList.remove("warn","crit","on");
+  $("#opts").textContent="";$("#ask").textContent="Watch the ball…";
+  gBall.setAttribute("opacity",0);
+  drawFielders(s.you);drawRunners(s.r);
+  paintBoard();
+
+  const sitFull=s.sit+(s.extra?`<span class="tagx">${s.extra}</span>`:"");
+  $("#sitTxt").innerHTML=sitFull;
+  balls(s.outs,$("#sitOuts"));
+  // big "look at the field" beat first
+  $("#setupTxt").textContent=s.sit+(s.extra?" · "+s.extra:"");
+  balls(s.outs,$("#setupOuts"));
+  $("#setup").classList.add("on");
+  VOICE.say(plain(s.sit)+(s.extra?", "+s.extra:"")+", "+(s.outs===1?"one out":s.outs+" outs"));
+
+  setTimeout(()=>{
+    $("#setup").classList.remove("on");
+    setTimeout(()=>{
+      SFX.crack();
+      const dest=P[s.you];
+      const cfg={ground:{dur:.72,arc:14},bunt:{dur:.55,arc:6},line:{dur:.6,arc:26},
+                 fly:{dur:1.15,arc:210},pop:{dur:1.1,arc:180}}[s.hit]||{dur:.8,arc:20};
+      const style=(s.hit==="fly"||s.hit==="pop")?"hold":"go";
+      if(s.hit==="ground"||s.hit==="bunt")burst(P.home[0],P.home[1]-6,{n:7,color:"#c98a5c",spd:120,life:.4,size:3.5,grav:400});
+      flyBall(P.home,dest,cfg.dur,cfg.arc,()=>{
+        SFX.mitt();
+        burst(dest[0],dest[1],{n:9,color:"#e6cba8",spd:110,life:.45,size:3.4,grav:380});
+        ring(dest[0],dest[1],"rgba(255,255,255,.6)",10,52,.42,3);
+        showQuestion(s);
+      },style);
+    },260);
+  },1500);
+}
+
+function showQuestion(s){
+  $("#ask").textContent=s.ask;
+  const box=$("#opts");box.textContent="";
+  const shown=shuffle(s.opts.slice());
+  shown.forEach((k,i)=>{
+    const b=document.createElement("button");b.className="opt";b.dataset.k=k;
+    b.innerHTML=`<span class="num" style="background:${OPTC[i%3]}">${i+1}</span>
+                 <span class="txt">${label(k,s)}</span><span class="mk"></span>`;
+    b.addEventListener("click",()=>answer(k));
+    box.appendChild(b);
+  });
+  drawTargets(shown,s,answer);
+  VOICE.say(plain(s.ask));
+  startClock();
+}
+
+function answer(key){
+  if(G.answered)return;
+  stopClock();clearTargets();VOICE.stop();
+  const s=G.cur,ok=key===s.ans;
+  const elapsed=G.useClock?(performance.now()-G.tStart)/1000:G.limit*.5;
+  G.played++;G.byTag[s.tag]=G.byTag[s.tag]||{r:0,n:0};G.byTag[s.tag].n++;
+  $("#opts").classList.add("locked");
+  [...$("#opts").children].forEach(b=>{
+    b.disabled=true;
+    const mk=b.querySelector(".mk");
+    if(b.dataset.k===s.ans){b.classList.add("right");mk.textContent="✓";}
+    else if(b.dataset.k===key){b.classList.add("wrong");mk.textContent="✗";}
+  });
+  const from=P[s.you],to=anchorFor(s.ans,s.you)||from;
+  const co=$("#callout"),big=co.querySelector(".big"),small=co.querySelector(".small");
+
+  if(ok){
+    G.right++;G.streak++;G.best=Math.max(G.best,G.streak);G.byTag[s.tag].r++;G.outs++;
+    const speed=G.useClock?Math.max(0,Math.round(120*(1-elapsed/G.limit))):60;
+    const gained=Math.round((150+speed)*Math.min(3,1+(G.streak-1)*.25));
+    G.pts+=gained;
+    const isThrow=!["tagbase","hold","tagrunner"].includes(s.ans);
+    const fire=()=>{
+      SFX.good();
+      burst(to[0],to[1],{n:26,color:["#3ee07f","#ffc24a","#fff","#7ce8ff"],spd:280,life:.9,size:6,grav:420});
+      ring(to[0],to[1],"#3ee07f",12,120,.6,6);
+      big.textContent="OUT!";small.textContent=G.streak>=3?G.streak+" IN A ROW!":"NICE PLAY";
+      co.classList.add("show","good");
+      $("#fieldbox").classList.add("shake");setTimeout(()=>$("#fieldbox").classList.remove("shake"),340);
+      paintBoard();popPts(gained);
+      VOICE.say("Out! "+plain(s.big),1.02);
+      reveal(true);
+    };
+    if(isThrow){SFX.whoosh();flyBall(from,to,.42,Math.min(90,dist(from,to)/4),fire);}
+    else{burst(from[0],from[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}
+  } else {
+    G.streak=0;G.runs++;SFX.bad();
+    big.textContent=key===null?"TOO SLOW":"SAFE!";
+    small.textContent="THEY SCORE A RUN";
+    co.classList.add("show","bad");
+    $("#fieldbox").classList.add("shake");setTimeout(()=>$("#fieldbox").classList.remove("shake"),340);
+    ring(P.home[0],P.home[1],"#ff5a5f",12,120,.7,6);
+    paintBoard();
+    VOICE.say("Safe. "+plain(s.big),1.0);
+    setTimeout(()=>{
+      co.classList.remove("show","bad");
+      // green guide + slow replay of the right play
+      if(["tagbase","hold","tagrunner"].includes(s.ans)){
+        ring(from[0],from[1],"#3ee07f",14,90,.8,6);
+        burst(from[0],from[1],{n:12,color:"#3ee07f",spd:140,life:.7,size:4,grav:380});
+        markRight(to,s);
+      } else {
+        const gd=el("line",{x1:from[0],y1:from[1],x2:to[0],y2:to[1],stroke:"#3ee07f",
+          "stroke-width":6,"stroke-dasharray":"14 10",opacity:.9});
+        gFx.appendChild(gd);
+        flyBall(from,to,.9,Math.min(80,dist(from,to)/5),()=>{
+          ring(to[0],to[1],"#3ee07f",12,100,.6,6);
+          burst(to[0],to[1],{n:12,color:"#3ee07f",spd:160,life:.6,size:4.5,grav:400});
+          markRight(to,s);
+        });
+      }
+      reveal(false);
+    },950);
+  }
+}
+function markRight(to,s){
+  const t=el("text",{x:to[0],y:to[1]-46,"text-anchor":"middle","font-size":24,"font-weight":"800",
+    fill:"#3ee07f",stroke:"rgba(0,0,0,.55)","stroke-width":4,"paint-order":"stroke"});
+  t.textContent="✓ HERE";gFx.appendChild(t);
+}
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+
+function reveal(ok){
+  setTimeout(()=>{
+    const s=G.cur;
+    $("#coachHd").textContent=s.big;
+    $("#coachTxt").textContent=s.why;
+    $("#coach").classList.add("on");
+    $("#btnNext").textContent=(G.outs>=G.target)?"See how you did":"Next Play";
+    if(s.arrows!==false&&(s.hit==="ground"||s.hit==="bunt")) forceArrows(s);
+  },ok?750:450);
+}
+$("#btnNext").addEventListener("click",()=>{
+  VOICE.stop();$("#callout").classList.remove("show","good","bad");
+  if(G.outs>=G.target){finish();return;}
+  nextPlay();
+});
+
+/* ═══════ RESULTS ═══════ */
+const RANKS=[
+  [1.0,"🏆","Gold Glove","Perfect! You did not miss a single play."],
+  [.9,"🥇","All-Star","Awesome. You knew where the ball was going before it got to you."],
+  [.75,"🥈","Starter","Nice job. You have the force plays down. Keep working on the long throws."],
+  [.6,"🥉","Getting There","Good start. Before every pitch, ask yourself: how many outs, and who has to run?"],
+  [0,"🧢","Rookie Ball","Keep going! Look at the runners first, then count the outs. It gets easy fast."]
+];
+function finish(){
+  stopClock();VOICE.stop();
+  const acc=G.played?G.right/G.played:0;
+  const rk=RANKS.find(r=>acc>=r[0])||RANKS[RANKS.length-1];
+  $("#medal").textContent=rk[1];$("#rankName").textContent=rk[2];$("#rankLine").textContent=rk[3];
+  $("#tOuts").textContent=G.outs;$("#tRuns").textContent=G.runs;$("#tStreak").textContent=G.best;
+  const bars=$("#bars");bars.textContent="";
+  const tags=Object.entries(G.byTag).sort((a,b)=>(a[1].r/a[1].n)-(b[1].r/b[1].n));
+  tags.forEach(([t,v])=>{
+    const p=v.r/v.n,face=p>=.99?"😃":p>=.5?"🙂":"😐";
+    const w=document.createElement("div");w.className="bar";
+    w.innerHTML=`<div class="bartop"><span>${face} ${t}</span><span class="r">${v.r} of ${v.n}</span></div>
+      <div class="track"><i class="fill" style="background:${p>=.8?"var(--safe)":p>=.5?"var(--amber)":"var(--out)"}"></i></div>`;
+    bars.appendChild(w);
+    requestAnimationFrame(()=>{w.querySelector(".fill").style.transform=`scaleX(${p})`;});
+  });
+  const weak=tags.find(t=>t[1].r<t[1].n);
+  $("#endNote").textContent=weak
+    ? `Practice this next: ${weak[0].toLowerCase()}. Set it up on the field and walk through it slowly.`
+    : "You got everything. Try the next level up!";
+  if(acc>=.75)SFX.cheer();
+  show("end");saveCareer(G.played,G.right);
+}
+async function loadCareer(){try{if(!window.storage)return;
+  const r=await window.storage.get("diamondiq:career");
+  if(r&&r.value){const c=JSON.parse(r.value);
+    $("#career").textContent=`You've played ${c.g} game${c.g===1?"":"s"} · ${Math.round(100*c.r/Math.max(1,c.n))}% right`;}
+}catch(e){}}
+async function saveCareer(n,r){try{if(!window.storage)return;
+  let c={g:0,n:0,r:0};
+  try{const p=await window.storage.get("diamondiq:career");if(p&&p.value)c=JSON.parse(p.value);}catch(e){}
+  c.g++;c.n+=n;c.r+=r;await window.storage.set("diamondiq:career",JSON.stringify(c));
+}catch(e){}}
+
+/* ═══════ WIRING ═══════ */
+const show=id=>document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
+document.querySelectorAll("#pickDiff .pick").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#pickDiff .pick").forEach(x=>x.classList.remove("sel"));
+  b.classList.add("sel");G.diff=+b.dataset.d;SFX.init();SFX.tone(760,.06,"triangle",.1);}));
+document.querySelectorAll("#pickLen .pick").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#pickLen .pick").forEach(x=>x.classList.remove("sel"));
+  b.classList.add("sel");G.target=+b.dataset.o;SFX.init();SFX.tone(760,.06,"triangle",.1);}));
+$("#tgVoice").addEventListener("click",()=>{
+  VOICE.on=!VOICE.on;$("#tgVoice").classList.toggle("on",VOICE.on);
+  $("#tgVoiceT").textContent=VOICE.on?"Read it to me":"Reading off";
+  $("#btnVoice").classList.toggle("off",!VOICE.on);
+  if(VOICE.on)VOICE.say("Okay, I'll read it out loud.");else VOICE.stop();});
+$("#tgClock").addEventListener("click",()=>{
+  G.useClock=!G.useClock;$("#tgClock").classList.toggle("on",G.useClock);
+  $("#tgClockT").textContent=G.useClock?"Clock on":"No clock";SFX.init();SFX.tone(660,.06,"triangle",.1);});
+$("#btnMute").addEventListener("click",()=>{SFX.on=!SFX.on;
+  $("#btnMute").textContent=SFX.on?"🔊":"🔇";$("#btnMute").classList.toggle("off",!SFX.on);
+  if(SFX.on){SFX.init();SFX.tone(880,.08);}});
+$("#btnVoice").addEventListener("click",()=>{VOICE.on=!VOICE.on;
+  $("#btnVoice").classList.toggle("off",!VOICE.on);$("#tgVoice").classList.toggle("on",VOICE.on);
+  $("#tgVoiceT").textContent=VOICE.on?"Read it to me":"Reading off";
+  if(!VOICE.on)VOICE.stop();else if(G.cur)VOICE.say(plain(G.cur.ask));});
+
+function startGame(){
+  SFX.init();if(VOICE.ready)VOICE.pick();
+  G.deck=buildDeck(G.diff);G.i=0;G.outs=0;G.runs=0;G.streak=0;G.best=0;
+  G.pts=0;G.right=0;G.played=0;G.byTag={};G.limit=LIMITS[G.diff];
+  $("#pips").textContent="";
+  show("game");paintBoard();nextPlay();
+}
+$("#btnPlay").addEventListener("click",startGame);
+$("#btnAgain").addEventListener("click",startGame);
+$("#btnHome").addEventListener("click",()=>{VOICE.stop();show("start");loadCareer();});
+document.addEventListener("keydown",e=>{
+  if($("#game").classList.contains("on")){
+    const o=[...$("#opts").children];
+    if(/^[1-3]$/.test(e.key)&&o[+e.key-1]&&!G.answered)o[+e.key-1].click();
+    if((e.key===" "||e.key==="Enter")&&$("#coach").classList.contains("on")){e.preventDefault();$("#btnNext").click();}
+  } else if($("#start").classList.contains("on")&&(e.key===" "||e.key==="Enter")){e.preventDefault();startGame();}
+});
+document.addEventListener("touchstart",()=>SFX.init(),{once:true,passive:true});
+loadCareer();
+</script>
+</body>
+</html>
