@@ -10,7 +10,10 @@ zero dependencies. The `src/` module tree described in the brief arrives in Phas
 paths like `src/game/geometry.ts` are a target, not a location.
 
 ## Naming
-Name is "Baseball IQ", URL is baseball-iq.vercel.app. It is generic and may change.
+Name is "Baseball IQ", URL is **baseball-iq-sandy.vercel.app**. It is generic and may change.
+(`baseball-iq.vercel.app` was already taken by a different project of Alex's — the Indiana
+Falcons 11U app — so Vercel appended a suffix. Do not link to the un-suffixed host; it serves
+someone else's app.)
 In Phase 0 it is hardcoded in `<title>` and the `<h1>` — deliberately, because link-preview
 scrapers do not run JavaScript, and a texted link with no title breaks the main distribution
 channel. Phase 1 moves it to one `APP_NAME` constant injected at BUILD time, never at runtime.

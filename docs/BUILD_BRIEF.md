@@ -5,7 +5,7 @@
 **Source material:** `legacy/baseball-iq-prototype.html` (working single-file prototype — this is the behavioral spec)
 
 > **Locked decisions — do not reopen.**
-> Name: **Baseball IQ**. URL: **`baseball-iq.vercel.app`** (Vercel free Hobby tier, no custom
+> Name: **Baseball IQ**. URL: **`baseball-iq-sandy.vercel.app`** (Vercel free Hobby tier, no custom
 > domain). Scope: a free tool for one Little League, not a commercial product. The name is
 > generic and may change if this outgrows the league — so it lives in **one constant**, never
 > hardcoded in markup (see §10).
@@ -137,11 +137,14 @@ here is a way for Phase 0 to fail at something that isn't the point. Vite arrive
    Confirm the score persists across a hard refresh. Confirm read-aloud works in Safari.
 6. Push to GitHub. Create the Vercel project named exactly `baseball-iq` so the assigned URL is
    `baseball-iq.vercel.app`. No framework preset — it's a static site.
+   **As built:** that project name was already taken by Alex's Indiana Falcons 11U app, so Vercel
+   assigned `baseball-iq-sandy.vercel.app`. That is the canonical URL. The un-suffixed host serves
+   a different app — never link to it.
 7. **Generate a QR code** for the live URL, committed as `docs/qr.png` plus a printable
    half-sheet PDF. This is how it actually gets distributed — taped in a dugout, handed out at a
    parent meeting. Nobody types a URL off a whiteboard.
 
-**Done when:** `baseball-iq.vercel.app` loads on a phone and an iPad, a full 9-out game is
+**Done when:** `baseball-iq-sandy.vercel.app` loads on a phone and an iPad, a full 9-out game is
 playable at every level, progress survives a refresh, and the QR code scans to it.
 
 **Explicitly out of scope for Phase 0:** modules, TypeScript, tests, a service worker,
@@ -334,7 +337,7 @@ Also assert all 3 options produce a field marker — a scenario where one choice
 
 ### 10.1 The decision
 
-**Name: Baseball IQ. URL: `baseball-iq.vercel.app`. No custom domain.**
+**Name: Baseball IQ. URL: `baseball-iq-sandy.vercel.app`. No custom domain.**
 
 Scope is one Little League. Nobody finds this through search — they get a link or scan a QR code
 from a coach. At that scope the name is a label, not a brand, and buying a domain is premature.

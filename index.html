@@ -1158,5 +1158,12 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("touchstart",()=>SFX.init(),{once:true,passive:true});
 loadCareer();
 </script>
+<!-- Vercel Web Analytics. Served first-party from this origin (not a third-party
+     domain), cookieless, no persistent per-child identifier — which is why the
+     brief picks it over Google Analytics for a kids' app. See brief §11.
+     Needs Analytics enabled in the Vercel project or this 404s harmlessly.
+     NOT the npm @vercel/analytics package: that is a React component and this
+     app has no build step and no framework. -->
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
