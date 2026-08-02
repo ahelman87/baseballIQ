@@ -904,13 +904,19 @@ function buildDeck(d){
   /* A1.4: cycle within the level rather than escalating — a repeat is a better
      experience than an 8-year-old getting Pro scenarios at play 12 of a Long game. */
   const core=shuffle(BANK.filter(s=>s.d===d));
+  /* Guards for future filters (position, concept): an empty core would spin the
+     fill loop forever, and returning [] would crash nextPlay (G.i%0 is NaN).
+     Never break for the player; be unmissable for whoever wrote the bad filter. */
+  if(!core.length){console.error("buildDeck: empty filter for level "+d);return shuffle(BANK.slice());}
   let deck=core.slice();
   while(deck.length<G.target+6)deck=deck.concat(shuffle(core.slice()));
+  if(core.length<2)return deck;  /* one scenario: repeats are unavoidable, skip repair */
   /* Repair pass: no scenario twice in a row. Scans EVERY adjacency including the
      modulo wrap (nextPlay indexes G.deck[G.i%len], so last->first is an adjacency
-     too) and swaps the offender forward; repeats until a full scan is clean. */
+     too) and swaps the offender forward; repeats until a full scan is clean.
+     Converges in 1-2 passes; hard-capped so a pathological deck returns as-is. */
   const n=deck.length;
-  for(let pass=0;pass<n;pass++){
+  for(let pass=0;pass<8;pass++){
     let dirty=false;
     for(let i=0;i<n;i++){
       const j=(i+1)%n,k=(j+1)%n;
@@ -1049,7 +1055,7 @@ function answer(key){
     };
     if(isThrow){SFX.whoosh();flyBall(from,to,.42,Math.min(90,dist(from,to)/4),fire);}
     else if(s.mode==="go"){SFX.whoosh();slideYou(to,.5,fire);}  /* the ball stays put — YOU run */
-    else{burst(from[0],from[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}
+    else{burst(P[s.you][0],P[s.you][1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}  /* dust = the FIELDER's feet, never ballTo */
   } else {
     G.streak=0;G.runs++;SFX.bad();
     big.textContent=key===null?"TOO SLOW":"SAFE!";
@@ -1200,6 +1206,12 @@ document.addEventListener("keydown",e=>{
 });
 document.addEventListener("touchstart",()=>SFX.init(),{once:true,passive:true});
 loadCareer();
+</script>
+<script>
+/* Offline shell: see sw.js. Registration failure (old browser, private mode)
+   is harmless — the app simply requires network, as it did before. */
+if("serviceWorker" in navigator)
+  addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(()=>{});});
 </script>
 <!-- Vercel Web Analytics. Served first-party from this origin (not a third-party
      domain), cookieless, no persistent per-child identifier — which is why the
