@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#070d1c">
 <title>Baseball IQ — Where's the Play?</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -183,7 +183,7 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
 .bartop{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:750;margin-bottom:5px}
 .bartop .r{color:var(--dim);font-size:12.5px;font-weight:700}
 .track{height:11px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
-.fill{height:100%;border-radius:99px;transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.9,.3,1)}
+.fill{display:block;width:100%;height:100%;border-radius:99px;transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.9,.3,1)}
 .note{font-size:15px;line-height:1.55;color:#e6ecfa;background:rgba(255,194,74,.1);border-radius:15px;
   padding:13px 14px;border:2px solid rgba(255,194,74,.35);margin:18px 0}
 .ghost{width:100%;padding:15px;border-radius:15px;background:var(--panel);border:2px solid var(--line);
@@ -592,16 +592,16 @@ const BANK=[
 {d:2,tag:"Long throws",you:"F7",hit:"fly",r:[0,1,0],outs:1,
  sit:"Runner on 2nd",ask:"The ball gets past you in left field. The runner rounds third and heads home.",
  opts:["home","third","second"],ans:"home",
- big:"He's going home. Throw home.",
+ big:"Long throw home? Keep it low.",
  why:"Throw low and hard toward the plate. Aim at the third baseman standing in the middle, so he can grab it if the throw is off."},
 
-{d:2,tag:"Where to run",you:"F9",hit:"line",r:[1,0,0],outs:1,mode:"go",arrows:false,
+{d:2,tag:"Where to run",you:"F9",hit:"line",r:[1,0,0],outs:1,mode:"go",ballTo:"F7",arrows:false,
  sit:"Runner on 1st",ask:"The ball is hit to left field. You play right field. Where do YOU run?",
  opts:["second","first","home"],ans:"second",
  big:"Back up the base.",
  why:"Outfielders never stand still. Run in behind second base. If the throw gets past everybody, you are there to stop it."},
 
-{d:2,tag:"Where to run",you:"F1",hit:"fly",r:[0,1,0],outs:1,mode:"go",arrows:false,
+{d:2,tag:"Where to run",you:"F1",hit:"fly",r:[0,1,0],outs:1,mode:"go",ballTo:"F8",arrows:false,
  sit:"Runner on 2nd",ask:"Base hit to center. The throw is going home. You are the pitcher. Where do YOU run?",
  opts:["home","second","first"],ans:"home",
  big:"Pitchers back up the throw.",
@@ -663,7 +663,7 @@ const BANK=[
  big:"Playing in? Stop the run.",
  why:"Your team moved up close for one reason: to keep him from scoring. Throw home."},
 
-{d:3,tag:"Where to run",you:"F6",hit:"line",r:[1,0,0],outs:1,mode:"go",arrows:false,
+{d:3,tag:"Where to run",you:"F6",hit:"line",r:[1,0,0],outs:1,mode:"go",ballTo:"F9",arrows:false,
  sit:"Runner on 1st",ask:"Base hit to right field. You play shortstop. Where do YOU run?",
  opts:["second","third","first"],ans:"second",
  big:"Somebody has to cover the bag.",
@@ -760,7 +760,8 @@ function drawFielders(you){
   for(const k in POS){
     const [x,y]=P[k],me=k===you;
     const g=el("g",{transform:`translate(${x},${y})`,opacity:me?1:.82});
-    if(me){const h=el("circle",{r:26,fill:"none",stroke:"#ffc24a","stroke-width":4});
+    if(me){g.setAttribute("id","youF");  /* slideYou() moves this group on "go" plays */
+      const h=el("circle",{r:26,fill:"none",stroke:"#ffc24a","stroke-width":4});
       h.appendChild(el("animate",{attributeName:"r",values:"23;32;23",dur:"1.5s",repeatCount:"indefinite"}));
       g.appendChild(h);}
     g.appendChild(el("circle",{r:15,fill:me?"#ffc24a":"#e9edf7",stroke:me?"#8a5a00":"#4a5b80","stroke-width":2}));
@@ -807,9 +808,10 @@ function drawTargets(opts,s,onPick){
     const off=(k==="tagbase"||k==="hold"||k==="tagrunner")?BADGEF[s.you]:(BADGE[k]||[0,42]);
     const bx=a[0]+off[0],by=a[1]+off[1];
     const g=el("g",{class:"hit-tgt"});
+    const dash=s.mode==="go"?{"stroke-dasharray":"10 7"}:{};  /* dashed = run here, solid = throw here */
     g.appendChild(el("circle",{cx:a[0],cy:a[1],r:44,fill:col,"fill-opacity":".001"}));
-    g.appendChild(el("circle",{cx:a[0],cy:a[1],r:30,fill:col,"fill-opacity":".18",stroke:col,"stroke-width":4}));
-    const p=el("circle",{cx:a[0],cy:a[1],r:30,fill:"none",stroke:col,"stroke-width":3});
+    g.appendChild(el("circle",{cx:a[0],cy:a[1],r:30,fill:col,"fill-opacity":".18",stroke:col,"stroke-width":4,...dash}));
+    const p=el("circle",{cx:a[0],cy:a[1],r:30,fill:"none",stroke:col,"stroke-width":3,...dash});
     p.appendChild(el("animate",{attributeName:"r",values:"30;46;30",dur:"1.9s",repeatCount:"indefinite"}));
     p.appendChild(el("animate",{attributeName:"opacity",values:".7;0;.7",dur:"1.9s",repeatCount:"indefinite"}));
     g.appendChild(p);
@@ -877,6 +879,19 @@ function flyBall(from,to,dur,arc,done,runStyle){
     if(k<1)requestAnimationFrame(frame);else done&&done();
   })(t0);
 }
+/* A1.3: "where do YOU run" answers move the PLAYER, not the ball. Slides the
+   player's marker (halo and YOU label ride along — same <g>) to the answer spot.
+   The ball stays wherever it landed: the other fielder has it, you're covering. */
+function slideYou(to,dur,done){
+  const g=gF.querySelector("#youF");
+  if(!g){done&&done();return;}
+  const f=P[G.cur.you],t0=performance.now();
+  (function frame(now){
+    const k=Math.min(1,(now-t0)/(dur*1000));
+    g.setAttribute("transform",`translate(${(f[0]+(to[0]-f[0])*k).toFixed(1)},${(f[1]+(to[1]-f[1])*k).toFixed(1)})`);
+    if(k<1)requestAnimationFrame(frame);else done&&done();
+  })(t0);
+}
 let last=performance.now();
 (function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;stepParts(dt);stepTrail(dt);requestAnimationFrame(loop);})(last);
 
@@ -886,9 +901,23 @@ const G={diff:1,target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:
 const LIMITS={1:22,2:18,3:14};
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 function buildDeck(d){
-  const core=shuffle(BANK.filter(s=>s.d===d)),lo=shuffle(BANK.filter(s=>s.d<d)),hi=shuffle(BANK.filter(s=>s.d>d));
-  let deck=core.concat(lo,hi);
-  while(deck.length<G.target+6)deck=deck.concat(shuffle(BANK.slice()));
+  /* A1.4: cycle within the level rather than escalating — a repeat is a better
+     experience than an 8-year-old getting Pro scenarios at play 12 of a Long game. */
+  const core=shuffle(BANK.filter(s=>s.d===d));
+  let deck=core.slice();
+  while(deck.length<G.target+6)deck=deck.concat(shuffle(core.slice()));
+  /* Repair pass: no scenario twice in a row. Scans EVERY adjacency including the
+     modulo wrap (nextPlay indexes G.deck[G.i%len], so last->first is an adjacency
+     too) and swaps the offender forward; repeats until a full scan is clean. */
+  const n=deck.length;
+  for(let pass=0;pass<n;pass++){
+    let dirty=false;
+    for(let i=0;i<n;i++){
+      const j=(i+1)%n,k=(j+1)%n;
+      if(deck[i]===deck[j]){[deck[j],deck[k]]=[deck[k],deck[j]];dirty=true;}
+    }
+    if(!dirty)break;
+  }
   return deck;
 }
 function balls(n,host,size){
@@ -952,7 +981,7 @@ function nextPlay(){
     $("#setup").classList.remove("on");
     setTimeout(()=>{
       SFX.crack();
-      const dest=P[s.you];
+      const dest=P[s.ballTo||s.you];  /* A1.3: "go" plays hit the ball AWAY from you */
       const cfg={ground:{dur:.72,arc:14},bunt:{dur:.55,arc:6},line:{dur:.6,arc:26},
                  fly:{dur:1.15,arc:210},pop:{dur:1.1,arc:180}}[s.hit]||{dur:.8,arc:20};
       const style=(s.hit==="fly"||s.hit==="pop")?"hold":"go";
@@ -996,7 +1025,7 @@ function answer(key){
     if(b.dataset.k===s.ans){b.classList.add("right");mk.textContent="✓";}
     else if(b.dataset.k===key){b.classList.add("wrong");mk.textContent="✗";}
   });
-  const from=P[s.you],to=anchorFor(s.ans,s.you)||from;
+  const from=P[s.ballTo||s.you],to=anchorFor(s.ans,s.you)||from;  /* throws come from where the ball IS */
   const co=$("#callout"),big=co.querySelector(".big"),small=co.querySelector(".small");
 
   if(ok){
@@ -1004,7 +1033,9 @@ function answer(key){
     const speed=G.useClock?Math.max(0,Math.round(120*(1-elapsed/G.limit))):60;
     const gained=Math.round((150+speed)*Math.min(3,1+(G.streak-1)*.25));
     G.pts+=gained;
-    const isThrow=!["tagbase","hold","tagrunner"].includes(s.ans);
+    /* A1.3: on "where do YOU run" plays nothing is thrown — the PLAYER moves.
+       A ball flying to the answer would teach the wrong lesson. */
+    const isThrow=s.mode!=="go"&&!["tagbase","hold","tagrunner"].includes(s.ans);
     const fire=()=>{
       SFX.good();
       burst(to[0],to[1],{n:26,color:["#3ee07f","#ffc24a","#fff","#7ce8ff"],spd:280,life:.9,size:6,grav:420});
@@ -1017,6 +1048,7 @@ function answer(key){
       reveal(true);
     };
     if(isThrow){SFX.whoosh();flyBall(from,to,.42,Math.min(90,dist(from,to)/4),fire);}
+    else if(s.mode==="go"){SFX.whoosh();slideYou(to,.5,fire);}  /* the ball stays put — YOU run */
     else{burst(from[0],from[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}
   } else {
     G.streak=0;G.runs++;SFX.bad();
@@ -1034,6 +1066,17 @@ function answer(key){
         ring(from[0],from[1],"#3ee07f",14,90,.8,6);
         burst(from[0],from[1],{n:12,color:"#3ee07f",spd:140,life:.7,size:4,grav:380});
         markRight(to,s);
+      } else if(s.mode==="go"){
+        /* replay the RUN, not a throw: guide from the player, slide the player, ball stays put */
+        const you=P[s.you];
+        const gd=el("line",{x1:you[0],y1:you[1],x2:to[0],y2:to[1],stroke:"#3ee07f",
+          "stroke-width":6,"stroke-dasharray":"14 10",opacity:.9});
+        gFx.appendChild(gd);
+        slideYou(to,.9,()=>{
+          ring(to[0],to[1],"#3ee07f",12,100,.6,6);
+          burst(to[0],to[1],{n:12,color:"#3ee07f",spd:160,life:.6,size:4.5,grav:400});
+          markRight(to,s);
+        });
       } else {
         const gd=el("line",{x1:from[0],y1:from[1],x2:to[0],y2:to[1],stroke:"#3ee07f",
           "stroke-width":6,"stroke-dasharray":"14 10",opacity:.9});
