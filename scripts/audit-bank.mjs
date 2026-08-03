@@ -67,6 +67,7 @@ const err = m => errors.push(m);
 const warn = m => warns.push(m);
 
 const pairGroups = {};
+const seenIds = new Set();
 
 BANK.forEach((s, idx) => {
   const id = `#${String(idx + 1).padStart(2)} [${s.you} ${s.tag}]`;
@@ -103,7 +104,22 @@ BANK.forEach((s, idx) => {
   }
   if (s.hit === "bunt" && s.ruleNote !== "bunt")
     err(`${id} hit:"bunt" without ruleNote:"bunt" — the band gate cannot see it`);
-  if (s.pairId) (pairGroups[s.pairId] = pairGroups[s.pairId] || []).push({ id, band: s.band });
+  /* pairId: a string, or an array when one scenario belongs to several pairs
+     (R05 sits in both lead-moves-ss and same-play-two-jobs). */
+  if (s.pairId !== undefined) {
+    const pids = Array.isArray(s.pairId) ? s.pairId : [s.pairId];
+    if (!pids.length || pids.some(p => typeof p !== "string" || !p))
+      err(`${id} pairId must be a non-empty string or array of strings`);
+    else pids.forEach(p => (pairGroups[p] = pairGroups[p] || []).push({ id, band: s.band }));
+  }
+  /* id: optional until the legacy 36 are backfilled; when present it is an
+     analytics key — unique forever, never recycled. */
+  if (s.id !== undefined) {
+    if (typeof s.id !== "string" || !/^[a-z0-9-]+$/.test(s.id))
+      err(`${id} id "${s.id}" must match ^[a-z0-9-]+$`);
+    else if (seenIds.has(s.id)) err(`${id} duplicate id "${s.id}" — ids are never recycled`);
+    else seenIds.add(s.id);
+  }
 
   /* ── data rules ── */
   if (!Array.isArray(s.opts) || s.opts.length !== 3) err(`${id} has ${s.opts?.length} options, need exactly 3`);

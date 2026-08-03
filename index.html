@@ -230,8 +230,8 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
     <div class="pickgrp">
       <div class="picklab">Pick your level</div>
       <div class="picks" id="pickDiff">
-        <button class="pick" data-band="Rookie"><div class="ic">🧢</div><b>Rookie</b><i>ages 8 &amp; under</i></button>
-        <button class="pick sel" data-band="Minors"><div class="ic">⭐</div><b>Minors</b><i>ages 9–10</i></button>
+        <button class="pick sel" data-band="Rookie"><div class="ic">🧢</div><b>Rookie</b><i>ages 8 &amp; under</i></button>
+        <button class="pick" data-band="Minors"><div class="ic">⭐</div><b>Minors</b><i>ages 9–10</i></button>
         <button class="pick" data-band="Majors"><div class="ic">🔥</div><b>Majors</b><i>ages 11–12</i></button>
       </div>
     </div>
@@ -728,9 +728,9 @@ let last=performance.now();
 (function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;stepParts(dt);stepTrail(dt);requestAnimationFrame(loop);})(last);
 
 /* ═══════ GAME ═══════ */
-// TEMPORARY: Rookie has only 6 scenarios post-migration and repeats ~2x per game.
-// Flip back to "Rookie" once it reaches ~12. See Addendum B §B5.
-const G={band:"Minors",target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
+// Default band is Rookie — 26 scenarios strong since the ROOKIE_SPECS batch;
+// a Normal game repeats nothing.
+const G={band:"Rookie",target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
   pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99,pos:[],
   youAt:null,ballAt:null};  /* single source of truth for fielder/ball position, per play */
 /* Clock allowances SHIFT down a band — an 8U player needs more time than the
@@ -923,7 +923,19 @@ function answer(key){
     setTimeout(()=>{
       co.classList.remove("show","bad");
       // green guide + slow replay of the right play
-      if(["tagbase","hold","tagrunner"].includes(s.ans)){
+      if(s.ans==="tagbase"){
+        /* replay the WALK to the bag, same picture as a correct answer — the
+           wrong answer is the teaching moment, so it gets the clearer version */
+        const you=G.youAt||P[s.you];
+        const gd=el("line",{x1:you[0],y1:you[1],x2:to[0],y2:to[1],stroke:"#3ee07f",
+          "stroke-width":6,"stroke-dasharray":"14 10",opacity:.9});
+        gFx.appendChild(gd);
+        slideYou(to,.9,()=>{
+          ring(to[0],to[1],"#3ee07f",12,100,.6,6);
+          burst(to[0],to[1],{n:12,color:"#3ee07f",spd:160,life:.6,size:4.5,grav:400});
+          markRight(to,s);
+        });
+      } else if(["hold","tagrunner"].includes(s.ans)){
         ring(from[0],from[1],"#3ee07f",14,90,.8,6);
         burst(from[0],from[1],{n:12,color:"#3ee07f",spd:140,life:.7,size:4,grav:380});
         markRight(to,s);

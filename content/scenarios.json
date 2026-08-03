@@ -828,6 +828,495 @@
    "ans": "tagbase",
    "big": "Slow ball? Take the closest base.",
    "why": "You might not beat the batter to first. Everybody has to run, so second base is an out too — and it is much closer."
+  },
+  {
+   "id": "rk-3b-nobody-first",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Ground ball to you at third base.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Only one runner. Get him at first.",
+   "why": "The batter is the only runner, and he is running to first base. Throw across and beat him there.",
+   "pairId": "bag-or-throw-3b"
+  },
+  {
+   "id": "rk-p-nobody-first",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F1",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Nobody on base",
+   "ask": "The ball comes right back to you on the mound.",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "Easy out. Toss it to first.",
+   "why": "The batter is the only runner. Take your time, turn, and make a good throw to first base."
+  },
+  {
+   "id": "rk-c-nobody-first",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "The ball dribbles out in front of the plate. You grab it.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Grab it and fire to first.",
+   "why": "The batter took off for first base as soon as he hit it. He is the only runner. Throw him out."
+  },
+  {
+   "id": "rk-lf-hit-ahead-2nd",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F7",
+   "hit": "line",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Base hit to you in left field. The batter is running to first.",
+   "opts": [
+    "second",
+    "first",
+    "home"
+   ],
+   "ans": "second",
+   "big": "Throw it in ahead of him.",
+   "why": "He already has first base. Second base is where he wants to go next. Throw to second so he stops at first."
+  },
+  {
+   "id": "rk-ss-r1-second",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "Ground ball to you at shortstop.",
+   "opts": [
+    "second",
+    "first",
+    "third"
+   ],
+   "ans": "second",
+   "big": "Get the lead runner at second.",
+   "why": "The runner from first is heading to second. He is the lead runner. Throw to second before he gets there.",
+   "pairId": [
+    "lead-moves-ss",
+    "same-play-two-jobs"
+   ]
+  },
+  {
+   "id": "rk-1b-offbag-second",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Ground ball to you at first base, but you are far off the bag.",
+   "opts": [
+    "second",
+    "first",
+    "home"
+   ],
+   "ans": "second",
+   "big": "Off the bag? Get the lead runner.",
+   "why": "You are too far from first to race the batter there. The lead runner is heading to second. Throw ahead of him."
+  },
+  {
+   "id": "rk-cf-hit-ahead-3rd",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F8",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "Base hit to you in center field. The lead runner is rounding second.",
+   "opts": [
+    "third",
+    "second",
+    "home"
+   ],
+   "ans": "third",
+   "big": "He wants third. Beat him there.",
+   "why": "The lead runner is already past second base. Third base is where he is going. Throw to third and make him stop."
+  },
+  {
+   "id": "rk-ss-r12-third",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Ground ball to you at shortstop.",
+   "opts": [
+    "third",
+    "first",
+    "second"
+   ],
+   "ans": "third",
+   "big": "Two runners on? The lead one wants third.",
+   "why": "The runner from second is the lead runner now, and he is heading to third base. Throw ahead of HIM, not the one behind.",
+   "pairId": "lead-moves-ss"
+  },
+  {
+   "id": "rk-3b-r12-bag",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Ground ball right at you at third base.",
+   "opts": [
+    "tagbase",
+    "first",
+    "second"
+   ],
+   "ans": "tagbase",
+   "big": "The lead runner is coming to YOU.",
+   "why": "The runner from second is heading right to your base. You do not even need to throw. Step on third and he is out.",
+   "pairId": "bag-or-throw-3b"
+  },
+  {
+   "id": "rk-2b-r12-third",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Ground ball to you at second base.",
+   "opts": [
+    "third",
+    "first",
+    "second"
+   ],
+   "ans": "third",
+   "big": "Throw ahead of the lead runner.",
+   "why": "The runner from second is the lead runner, and he is going to third. Second base is behind him now. Throw to third."
+  },
+  {
+   "id": "rk-rf-hit-ahead-3rd",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F9",
+   "hit": "line",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Base hit to you in right field. The lead runner is heading for third.",
+   "opts": [
+    "third",
+    "first",
+    "home"
+   ],
+   "ans": "third",
+   "big": "Throw to third and stop him.",
+   "why": "The lead runner is trying to take third base. Get the ball there first and he has to stop."
+  },
+  {
+   "id": "rk-lf-hit-ahead-home",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F7",
+   "hit": "line",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Base hit to you in left field. The lead runner is rounding third.",
+   "opts": [
+    "home",
+    "third",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Now home is the base ahead of him.",
+   "why": "The lead runner is past third and running for the plate. Home is the base ahead of him now. Throw it home."
+  },
+  {
+   "id": "rk-ss-loaded-home",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 0,
+   "sit": "Bases loaded",
+   "ask": "Ground ball to you at shortstop.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Stop the lead runner at the plate.",
+   "why": "With the bases loaded, the lead runner is heading home from third. Throw to the catcher and stop the run."
+  },
+  {
+   "id": "rk-3b-loaded-home",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 1,
+   "sit": "Bases loaded",
+   "ask": "Ground ball to you at third base.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Home is one throw away. Take it.",
+   "why": "The runner from third is the lead runner and he is almost home. You are close. Make the short throw to the plate."
+  },
+  {
+   "id": "rk-2b-loaded-home",
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 0,
+   "sit": "Bases loaded",
+   "ask": "Ground ball to you at second base.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Get the one heading home.",
+   "why": "Every base has a runner, so the lead runner is running home. First base can wait. Throw to the plate."
+  },
+  {
+   "id": "rk-p-backup-1st",
+   "band": "Rookie",
+   "tag": "Where to run",
+   "you": "F1",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Ground ball to the shortstop. You are the pitcher. Where do YOU run?",
+   "opts": [
+    "first",
+    "home",
+    "second"
+   ],
+   "ans": "first",
+   "big": "Every throw needs a backup.",
+   "why": "The throw is going to first base. Run behind first, way back. If the throw gets away, you are there to save it.",
+   "mode": "go",
+   "ballTo": "F6",
+   "arrows": false,
+   "labels": {
+    "first": "Run behind 1st base"
+   }
+  },
+  {
+   "id": "rk-rf-backup-1st",
+   "band": "Rookie",
+   "tag": "Where to run",
+   "you": "F9",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Ground ball to third. The throw is going to first. Where do YOU run?",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "Back up the throw at first.",
+   "why": "Right field is behind first base. Run in toward the line. If the throw gets past first, you are the one who saves it.",
+   "mode": "go",
+   "ballTo": "F5",
+   "arrows": false,
+   "labels": {
+    "first": "Run behind 1st base"
+   }
+  },
+  {
+   "id": "rk-cf-backup-2nd",
+   "band": "Rookie",
+   "tag": "Where to run",
+   "you": "F8",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "Ground ball to the shortstop. You play center field. Where do YOU run?",
+   "opts": [
+    "second",
+    "first",
+    "home"
+   ],
+   "ans": "second",
+   "big": "No ball? You still have a job.",
+   "why": "The shortstop will throw to second base. Run in behind second. If the ball gets past, you are there to stop it.",
+   "mode": "go",
+   "ballTo": "F6",
+   "arrows": false,
+   "pairId": "same-play-two-jobs"
+  },
+  {
+   "id": "rk-1b-cover-1st",
+   "band": "Rookie",
+   "tag": "Where to run",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Ground ball to the third baseman. Where do YOU run?",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "His throw needs a place to land.",
+   "why": "The third baseman is going to throw to first base. That is YOUR base. Get to the bag and be ready to catch it.",
+   "mode": "go",
+   "ballTo": "F5",
+   "arrows": false
+  },
+  {
+   "id": "rk-3b-cover-3rd",
+   "band": "Rookie",
+   "tag": "Where to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "The shortstop calls the ground ball. Where do YOU go?",
+   "opts": [
+    "third",
+    "second",
+    "home"
+   ],
+   "ans": "third",
+   "big": "Don't chase it. Cover your base.",
+   "why": "Only one player fields the ball, and this time it is not you. Your job is third base. Go stand on your bag.",
+   "mode": "go",
+   "ballTo": "F6",
+   "arrows": false
   }
  ]
 }
