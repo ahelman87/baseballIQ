@@ -46,6 +46,27 @@ try {
   process.exit(2);
 }
 
+/* ── ballZone chirality: assert the BASEBALL facts by name ──────────────────
+   A 2B's right is toward second, his left toward first; a 3B's right is
+   toward third/the line. These are checked against the real-world convention
+   (facing south, your right hand points west), NOT against any scenario copy
+   — the original inversion survived precisely because the check referenced
+   copy that carried the same error. */
+{
+  const dot = (v, a, b) => v[0] * (P[b][0] - P[a][0]) + v[1] * (P[b][1] - P[a][1]);
+  const facts = [
+    ["F4 right → toward second", dot(zoneOffset("F4", "right"), "F4", "second") > 0],
+    ["F4 left → toward first",   dot(zoneOffset("F4", "left"),  "F4", "first")  > 0],
+    ["F5 right → toward third",  dot(zoneOffset("F5", "right"), "F5", "third")  > 0],
+    ["F6 right → into the hole (toward third)", dot(zoneOffset("F6", "right"), "F6", "third") > 0],
+  ];
+  const broken = facts.filter(([, ok]) => !ok);
+  if (broken.length) {
+    console.error("CHIRALITY BROKEN:\n" + broken.map(([n]) => "  ✘ " + n).join("\n"));
+    process.exit(2);
+  }
+}
+
 /* ── invariant inputs (BUILD_BRIEF §8) ─────────────────────────────────────── */
 const CHALK = [[676, 616], [500, 420], [324, 616], [596, 732]]; // 1st 2nd 3rd HOME labels
 const FIELDERS = Object.entries(P).filter(([k]) => /^F\d$/.test(k));

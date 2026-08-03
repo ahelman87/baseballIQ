@@ -445,9 +445,12 @@ const $=s=>document.querySelector(s);
 const el=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
 const OPTC=["#3ba7ff","#ffc24a","#ff5fa8"];
 
-/* ballZone: ball location relative to the player, facing home. Direction is
-   computed, never hardcoded — y is DOWN in SVG, so "right" is (fy,-fx): for a
-   2B facing home that comes out toward FIRST base (dot +67.8), not second. */
+/* ballZone: ball location relative to the FIELDER, facing home — the real
+   baseball convention: a 2B's right is toward second, a 3B's right is toward
+   the line, the shortstop's hole is to his RIGHT. Bird's-eye rule: facing
+   south, your right hand points west; in y-down SVG that is right=(-fy,fx).
+   The audit asserts these facts by name so the chirality can never silently
+   flip again. */
 function zoneOffset(you,zone){
   if(!zone||zone==="at")return [0,0];
   const [hx,hy]=P.home,[x,y]=P[you];
@@ -455,8 +458,8 @@ function zoneOffset(you,zone){
   const D=50;
   if(zone==="in")   return [ fx*D, fy*D];
   if(zone==="deep") return [-fx*D,-fy*D];
-  if(zone==="right")return [ fy*D,-fx*D];
-  if(zone==="left") return [-fy*D, fx*D];
+  if(zone==="right")return [-fy*D, fx*D];
+  if(zone==="left") return [ fy*D,-fx*D];
   return [0,0];
 }
 /* Nearest bag to a fielder's HOME position — deliberately not the displaced
