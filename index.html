@@ -150,6 +150,7 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
 .opt .txt{font-size:16px;font-weight:750;line-height:1.2}
 .opt:active{transform:scale(.975)}
 .opt.right{background:rgba(62,224,127,.22);border-color:var(--safe)}
+.opt.right.picked{border-color:#fff}  /* dual-answer scenarios: YOUR correct pick vs the also-fine one */
 .opt.wrong{background:rgba(255,90,95,.22);border-color:var(--out)}
 .opt .mk{margin-left:auto;font-size:20px;font-weight:900;opacity:0}
 .opt.right .mk,.opt.wrong .mk{opacity:1}
@@ -870,17 +871,30 @@ function showQuestion(s){
 function answer(key){
   if(G.answered)return;
   stopClock();clearTargets();VOICE.stop();
-  const s=G.cur,ok=key===s.ans;
+  /* alsoOk: some plays have two defensible answers whose tiebreaker (score,
+     inning, whose arm) lives outside the picture — both count as outs, and
+     the coaching note ends with "ask your coach". Absent on 56 of 58+
+     scenarios; behavior is identical when absent. */
+  const s=G.cur,also=s.alsoOk||[],ok=key===s.ans||also.includes(key);
+  const alsoPick=ok&&key!==s.ans;  /* picked the secondary correct answer */
   const elapsed=G.useClock?(performance.now()-G.tStart)/1000:G.limit*.5;
   G.played++;G.byTag[s.tag]=G.byTag[s.tag]||{r:0,n:0};G.byTag[s.tag].n++;
   $("#opts").classList.add("locked");
   [...$("#opts").children].forEach(b=>{
     b.disabled=true;
     const mk=b.querySelector(".mk");
-    if(b.dataset.k===s.ans){b.classList.add("right");mk.textContent="✓";}
+    if(b.dataset.k===s.ans||also.includes(b.dataset.k)){
+      /* BOTH correct options show ✓ — if only the picked one did, the screen
+         would contradict a note that says both work. The player's own pick is
+         highlighted (white border), gated so nothing changes without alsoOk. */
+      b.classList.add("right");mk.textContent="✓";
+      if(also.length&&b.dataset.k===key)b.classList.add("picked");
+    }
     else if(b.dataset.k===key){b.classList.add("wrong");mk.textContent="✗";}
   });
-  const from=G.ballAt||P[s.you],to=anchorFor(s.ans,s.you,G.youAt)||from;  /* throws come from where the ball IS */
+  /* Celebrate the PLAYER'S choice; a miss still replays the primary answer. */
+  const toKey=ok?key:s.ans;
+  const from=G.ballAt||P[s.you],to=anchorFor(toKey,s.you,G.youAt)||from;  /* throws come from where the ball IS */
   const co=$("#callout"),big=co.querySelector(".big"),small=co.querySelector(".small");
 
   if(ok){
@@ -889,13 +903,14 @@ function answer(key){
     const gained=Math.round((150+speed)*Math.min(3,1+(G.streak-1)*.25));
     G.pts+=gained;
     /* A1.3: on "where do YOU run" plays nothing is thrown — the PLAYER moves.
-       A ball flying to the answer would teach the wrong lesson. */
-    const isThrow=s.mode!=="go"&&!["tagbase","hold","tagrunner"].includes(s.ans);
+       A ball flying to the answer would teach the wrong lesson. Branches key
+       off toKey (the player's choice) so an alsoOk pick animates as itself. */
+    const isThrow=s.mode!=="go"&&!["tagbase","hold","tagrunner"].includes(toKey);
     const fire=()=>{
       SFX.good();
       burst(to[0],to[1],{n:26,color:["#3ee07f","#ffc24a","#fff","#7ce8ff"],spd:280,life:.9,size:6,grav:420});
       ring(to[0],to[1],"#3ee07f",12,120,.6,6);
-      big.textContent="OUT!";small.textContent=G.streak>=3?G.streak+" IN A ROW!":"NICE PLAY";
+      big.textContent="OUT!";small.textContent=alsoPick?"ALSO GOOD":(G.streak>=3?G.streak+" IN A ROW!":"NICE PLAY");
       co.classList.add("show","good");
       $("#fieldbox").classList.add("shake");setTimeout(()=>$("#fieldbox").classList.remove("shake"),340);
       paintBoard();popPts(gained);
@@ -904,7 +919,7 @@ function answer(key){
     };
     if(isThrow){SFX.whoosh();flyBall(from,to,.42,Math.min(90,dist(from,to)/4),fire);}
     else if(s.mode==="go"){SFX.whoosh();slideYou(to,.5,fire);}  /* the ball stays put — YOU run */
-    else if(s.ans==="tagbase"){
+    else if(toKey==="tagbase"){
       /* "Step on the bag" means the fielder WALKS to it — dust where the ball
          was fielded, then carry it to the base the marker now sits on. */
       burst(G.youAt[0],G.youAt[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});

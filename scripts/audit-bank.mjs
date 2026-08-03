@@ -68,6 +68,7 @@ const warn = m => warns.push(m);
 
 const pairGroups = {};
 const seenIds = new Set();
+const alsoByTag = {};
 
 BANK.forEach((s, idx) => {
   const id = `#${String(idx + 1).padStart(2)} [${s.you} ${s.tag}]`;
@@ -112,13 +113,30 @@ BANK.forEach((s, idx) => {
       err(`${id} pairId must be a non-empty string or array of strings`);
     else pids.forEach(p => (pairGroups[p] = pairGroups[p] || []).push({ id, band: s.band }));
   }
-  /* id: optional until the legacy 36 are backfilled; when present it is an
-     analytics key — unique forever, never recycled. */
-  if (s.id !== undefined) {
-    if (typeof s.id !== "string" || !/^[a-z0-9-]+$/.test(s.id))
-      err(`${id} id "${s.id}" must match ^[a-z0-9-]+$`);
-    else if (seenIds.has(s.id)) err(`${id} duplicate id "${s.id}" — ids are never recycled`);
-    else seenIds.add(s.id);
+  /* id: REQUIRED — an analytics key, unique forever, never recycled. Carries
+     no band prefix: an id is permanent and a band is not (three scenarios
+     changed bands before analytics ever existed). */
+  if (s.id === undefined) err(`${id} has no id — every scenario needs a stable analytics key`);
+  else if (typeof s.id !== "string" || !/^[a-z0-9-]+$/.test(s.id))
+    err(`${id} id "${s.id}" must match ^[a-z0-9-]+$`);
+  else if (/^(rk|mn|mj)-/.test(s.id))
+    err(`${id} id "${s.id}" carries a band prefix — bands change, ids cannot`);
+  else if (seenIds.has(s.id)) err(`${id} duplicate id "${s.id}" — ids are never recycled`);
+  else seenIds.add(s.id);
+  /* alsoOk: dual-answer scenarios. Kept rare by design — two correct of three
+     options means a random tap is right 67% of the time. */
+  if (s.alsoOk !== undefined) {
+    if (!Array.isArray(s.alsoOk) || !s.alsoOk.length || s.alsoOk.some(k => typeof k !== "string"))
+      err(`${id} alsoOk must be a non-empty array of option keys (omit it entirely otherwise)`);
+    else {
+      s.alsoOk.forEach(k => {
+        if (!s.opts.includes(k)) err(`${id} alsoOk "${k}" is not among its options`);
+        if (k === s.ans) err(`${id} alsoOk "${k}" duplicates the primary answer`);
+      });
+      if (s.pairId !== undefined)
+        err(`${id} has alsoOk AND pairId — a pair's whole job is that the answer changes`);
+      (alsoByTag[s.tag] = alsoByTag[s.tag] || []).push(id.trim());
+    }
   }
 
   /* ── data rules ── */
@@ -178,6 +196,11 @@ BANK.forEach((s, idx) => {
     }
   }
 });
+
+/* ── alsoOk rarity: more than one per concept is the corrosive pattern ── */
+for (const [tag, members] of Object.entries(alsoByTag))
+  if (members.length > 1)
+    warn(`concept "${tag}" has ${members.length} alsoOk scenarios (${members.join(", ")}) — cap is roughly one per concept`);
 
 /* ── pairId groups: exactly two halves, same band ── */
 for (const [pid, members] of Object.entries(pairGroups)) {

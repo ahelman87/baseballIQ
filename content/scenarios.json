@@ -1,6 +1,7 @@
 {
  "scenarios": [
   {
+   "id": "ss-nobody-first",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F6",
@@ -23,6 +24,7 @@
    "why": "The only runner is the batter, and he is running to first base. Throw there."
   },
   {
+   "id": "1b-nobody-bag",
    "band": "Rookie",
    "tag": "Counting outs",
    "you": "F3",
@@ -45,6 +47,7 @@
    "why": "You can beat the runner to the bag by yourself. No throw needed. Step on first."
   },
   {
+   "id": "p-loaded-home",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F1",
@@ -67,6 +70,7 @@
    "why": "Every runner has to run, so the man on third has to go home. Throw to the catcher and stop the run."
   },
   {
+   "id": "2b-r1-bag",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F4",
@@ -89,6 +93,7 @@
    "why": "The batter is running to first, so the runner has to leave first base. You are already there. Step on the bag."
   },
   {
+   "id": "ss-r3-2out-first",
    "band": "Minors",
    "tag": "Counting outs",
    "you": "F6",
@@ -111,6 +116,7 @@
    "why": "Let him run. If you get the batter at first for the third out, his run does not count."
   },
   {
+   "id": "3b-slow-first",
    "band": "Minors",
    "tag": "Who has to run",
    "you": "F5",
@@ -133,6 +139,7 @@
    "why": "The ball took too long to get to you. The runner is already at second. Throw to first."
   },
   {
+   "id": "1b-r2-bag",
    "band": "Minors",
    "tag": "Who has to run",
    "you": "F3",
@@ -155,6 +162,7 @@
    "why": "The runner on second does not have to run. You can't force him out. Step on first and take the easy out."
   },
   {
+   "id": "ss-catch-pitcher",
    "band": "Rookie",
    "tag": "Counting outs",
    "you": "F6",
@@ -177,6 +185,7 @@
    "why": "The batter is out as soon as you catch it. There is nobody else to get. Give the ball back to the pitcher."
   },
   {
+   "id": "c-loaded-bag",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F2",
@@ -199,6 +208,7 @@
    "why": "The runner on third has to run home. Home plate is right under your feet. Step on it."
   },
   {
+   "id": "cf-fly-second",
    "band": "Minors",
    "tag": "Catches and tag ups",
    "you": "F8",
@@ -221,6 +231,7 @@
    "why": "The runner ran when the ball was hit. Throw to second base so he can't steal the extra base."
   },
   {
+   "id": "2b-depth-back-first",
    "band": "Majors",
    "tag": "Infield in or back",
    "you": "F4",
@@ -244,6 +255,7 @@
    "why": "Your team is standing deep, so the run is going to score. That is okay. Get the out at first base."
   },
   {
+   "id": "2b-force-bag",
    "band": "Majors",
    "tag": "Who has to run",
    "you": "F4",
@@ -267,6 +279,7 @@
    "pairId": "force-choice-2b"
   },
   {
+   "id": "2b-force-pulled-first",
    "band": "Majors",
    "tag": "Who has to run",
    "you": "F4",
@@ -291,6 +304,7 @@
    "ballZone": "right"
   },
   {
+   "id": "ss-dp-second",
    "band": "Majors",
    "tag": "Double plays",
    "you": "F6",
@@ -313,6 +327,7 @@
    "why": "The runner on first has to run. Throw to second to start a double play. Two outs ends the inning."
   },
   {
+   "id": "ss-loaded-dp-second",
    "band": "Majors",
    "tag": "Double plays",
    "you": "F6",
@@ -335,6 +350,7 @@
    "why": "Throwing home only gets one out. Second base can get two and end the inning."
   },
   {
+   "id": "3b-lookback-first",
    "band": "Minors",
    "tag": "Watching the runner",
    "you": "F5",
@@ -357,6 +373,7 @@
    "why": "He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first."
   },
   {
+   "id": "rf-tagup-home",
    "band": "Majors",
    "tag": "Catches and tag ups",
    "you": "F9",
@@ -379,6 +396,7 @@
    "why": "He waited for your catch, then took off. Throw to the catcher and try to beat him to the plate."
   },
   {
+   "id": "lf-fly-2out-hold",
    "band": "Minors",
    "tag": "Counting outs",
    "you": "F7",
@@ -401,6 +419,7 @@
    "why": "There were already two outs. Your catch was the third one. The inning is over, so there is nobody to throw at."
   },
   {
+   "id": "rf-behind-first",
    "band": "Minors",
    "tag": "Catches and tag ups",
    "you": "F9",
@@ -423,6 +442,7 @@
    "why": "He has to go back and touch first base. Throw to first before he gets there and he is out too."
   },
   {
+   "id": "p-bunt-first",
    "band": "Minors",
    "tag": "Bunts",
    "you": "F1",
@@ -446,6 +466,7 @@
    "ruleNote": "bunt"
   },
   {
+   "id": "3b-bunt-covered-first",
    "band": "Majors",
    "tag": "Bunts",
    "you": "F5",
@@ -469,6 +490,7 @@
    "ruleNote": "bunt"
   },
   {
+   "id": "lf-long-throw-home",
    "band": "Majors",
    "tag": "Long throws",
    "you": "F7",
@@ -491,6 +513,7 @@
    "why": "Throw low and hard toward the plate. Aim at the third baseman standing in the middle, so he can grab it if the throw is off."
   },
   {
+   "id": "rf-backup-second",
    "band": "Minors",
    "tag": "Where to run",
    "you": "F9",
@@ -516,6 +539,7 @@
    "why": "Outfielders never stand still. Run in behind second base. If the throw gets past everybody, you are there to stop it."
   },
   {
+   "id": "p-backup-home",
    "band": "Minors",
    "tag": "Where to run",
    "you": "F1",
@@ -541,6 +565,7 @@
    "why": "Run behind the catcher and stand way back. If the throw gets past him, you stop it and nobody moves up."
   },
   {
+   "id": "ss-rundown-second",
    "band": "Minors",
    "tag": "Rundowns",
    "you": "F6",
@@ -564,6 +589,7 @@
    "why": "Chase him toward second base, not third. Then make one hard throw. The worst thing that happens is he ends up where he started."
   },
   {
+   "id": "ss-infield-fly-hold",
    "band": "Minors",
    "tag": "Infield fly",
    "you": "F6",
@@ -588,6 +614,7 @@
    "ruleNote": "infieldFly"
   },
   {
+   "id": "cf-tagup-third",
    "band": "Majors",
    "tag": "Long throws",
    "you": "F8",
@@ -610,6 +637,7 @@
    "why": "He is not going home, so home is the wrong throw. Throw toward third base. The shortstop runs out to help you."
   },
   {
+   "id": "rf-relay-cut2",
    "band": "Minors",
    "tag": "Long throws",
    "you": "F9",
@@ -632,6 +660,7 @@
    "why": "You can't throw that far on a line. The second baseman runs out to meet you. Throw to him and he throws the rest of the way."
   },
   {
+   "id": "c-dropped3rd-first",
    "band": "Majors",
    "tag": "Tricky rules",
    "you": "F2",
@@ -656,6 +685,7 @@
    "ruleNote": "dropped3rd"
   },
   {
+   "id": "1b-pitcher-covers-first",
    "band": "Majors",
    "tag": "Who has to run",
    "you": "F3",
@@ -681,6 +711,7 @@
    "why": "You are too far from the bag to get back in time. The pitcher runs over to cover first on every ball hit your way. Toss it to him, chest high. Forget the runner."
   },
   {
+   "id": "3b-r3-breaks-home",
    "band": "Majors",
    "tag": "Watching the runner",
    "you": "F5",
@@ -710,6 +741,7 @@
    ]
   },
   {
+   "id": "3b-r3-holds-second",
    "band": "Majors",
    "tag": "Who has to run",
    "you": "F5",
@@ -738,6 +770,7 @@
    ]
   },
   {
+   "id": "ss-depth-in-home",
    "band": "Majors",
    "tag": "Infield in or back",
    "you": "F6",
@@ -761,6 +794,7 @@
    "why": "Your team moved up close for one reason: to keep him from scoring. Throw home."
   },
   {
+   "id": "ss-cover-second",
    "band": "Majors",
    "tag": "Where to run",
    "you": "F6",
@@ -786,6 +820,7 @@
    "why": "The second baseman ran out to the grass to take the relay throw. That leaves second base empty. You cover it."
   },
   {
+   "id": "cf-2out-home",
    "band": "Majors",
    "tag": "Long throws",
    "you": "F8",
@@ -808,6 +843,7 @@
    "why": "There is nothing to save the ball for. Throw hard toward the plate on one bounce."
   },
   {
+   "id": "2b-loaded-slow-bag",
    "band": "Majors",
    "tag": "Counting outs",
    "you": "F4",
@@ -830,7 +866,7 @@
    "why": "You might not beat the batter to first. Everybody has to run, so second base is an out too — and it is much closer."
   },
   {
-   "id": "rk-3b-nobody-first",
+   "id": "3b-nobody-first",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F5",
@@ -854,7 +890,7 @@
    "pairId": "bag-or-throw-3b"
   },
   {
-   "id": "rk-p-nobody-first",
+   "id": "p-nobody-first",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F1",
@@ -877,7 +913,7 @@
    "why": "The batter is the only runner. Take your time, turn, and make a good throw to first base."
   },
   {
-   "id": "rk-c-nobody-first",
+   "id": "c-nobody-first",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F2",
@@ -900,7 +936,7 @@
    "why": "The batter took off for first base as soon as he hit it. He is the only runner. Throw him out."
   },
   {
-   "id": "rk-lf-hit-ahead-2nd",
+   "id": "lf-hit-ahead-second",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F7",
@@ -923,7 +959,7 @@
    "why": "He already has first base. Second base is where he wants to go next. Throw to second so he stops at first."
   },
   {
-   "id": "rk-ss-r1-second",
+   "id": "ss-r1-second",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F6",
@@ -950,7 +986,7 @@
    ]
   },
   {
-   "id": "rk-1b-offbag-second",
+   "id": "1b-offbag-second",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F3",
@@ -973,7 +1009,7 @@
    "why": "You are too far from first to race the batter there. The lead runner is heading to second. Throw ahead of him."
   },
   {
-   "id": "rk-cf-hit-ahead-3rd",
+   "id": "cf-hit-ahead-third",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F8",
@@ -996,7 +1032,7 @@
    "why": "The lead runner is already past second base. Third base is where he is going. Throw to third and make him stop."
   },
   {
-   "id": "rk-ss-r12-third",
+   "id": "ss-r12-third",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F6",
@@ -1020,7 +1056,7 @@
    "pairId": "lead-moves-ss"
   },
   {
-   "id": "rk-3b-r12-bag",
+   "id": "3b-r12-bag",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F5",
@@ -1044,7 +1080,7 @@
    "pairId": "bag-or-throw-3b"
   },
   {
-   "id": "rk-2b-r12-third",
+   "id": "2b-r12-third",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F4",
@@ -1067,7 +1103,7 @@
    "why": "The runner from second is the lead runner, and he is going to third. Second base is behind him now. Throw to third."
   },
   {
-   "id": "rk-rf-hit-ahead-3rd",
+   "id": "rf-hit-ahead-third",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F9",
@@ -1090,7 +1126,7 @@
    "why": "The lead runner is trying to take third base. Get the ball there first and he has to stop."
   },
   {
-   "id": "rk-lf-hit-ahead-home",
+   "id": "lf-hit-ahead-home",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F7",
@@ -1113,7 +1149,7 @@
    "why": "The lead runner is past third and running for the plate. Home is the base ahead of him now. Throw it home."
   },
   {
-   "id": "rk-ss-loaded-home",
+   "id": "ss-loaded-home",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F6",
@@ -1136,7 +1172,7 @@
    "why": "With the bases loaded, the lead runner is heading home from third. Throw to the catcher and stop the run."
   },
   {
-   "id": "rk-3b-loaded-home",
+   "id": "3b-loaded-home",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F5",
@@ -1159,7 +1195,7 @@
    "why": "The runner from third is the lead runner and he is almost home. You are close. Make the short throw to the plate."
   },
   {
-   "id": "rk-2b-loaded-home",
+   "id": "2b-loaded-home",
    "band": "Rookie",
    "tag": "Who has to run",
    "you": "F4",
@@ -1182,7 +1218,7 @@
    "why": "Every base has a runner, so the lead runner is running home. First base can wait. Throw to the plate."
   },
   {
-   "id": "rk-p-backup-1st",
+   "id": "p-backup-first",
    "band": "Rookie",
    "tag": "Where to run",
    "you": "F1",
@@ -1211,7 +1247,7 @@
    }
   },
   {
-   "id": "rk-rf-backup-1st",
+   "id": "rf-backup-first",
    "band": "Rookie",
    "tag": "Where to run",
    "you": "F9",
@@ -1240,7 +1276,7 @@
    }
   },
   {
-   "id": "rk-cf-backup-2nd",
+   "id": "cf-backup-second",
    "band": "Rookie",
    "tag": "Where to run",
    "you": "F8",
@@ -1267,7 +1303,7 @@
    "pairId": "same-play-two-jobs"
   },
   {
-   "id": "rk-1b-cover-1st",
+   "id": "1b-cover-first",
    "band": "Rookie",
    "tag": "Where to run",
    "you": "F3",
@@ -1293,7 +1329,7 @@
    "arrows": false
   },
   {
-   "id": "rk-3b-cover-3rd",
+   "id": "3b-cover-third",
    "band": "Rookie",
    "tag": "Where to run",
    "you": "F5",
