@@ -1,6 +1,6 @@
 # Minors band — scenario specs for review
 
-**Addendum B §B8 step 3, band 2 of 3.** Twenty-five new scenarios taking Minors from 13 → 38.
+**Addendum B §B8 step 3, band 2 of 3.** Twenty-six new scenarios taking Minors from 13 → 39.
 
 Same review method: **scan the Answer column, ask "is that what I'd tell the kid?"** Roughly
 twelve minutes. Claude Code writes the copy afterward.
@@ -30,7 +30,8 @@ kid inferring it from text.
 | M01 | 3B | 2nd | 1 | Ground ball right at you. He stays on the bag. | 1st |
 | M02 | 3B | 1st, 2nd | 1 | Ground ball right at you. | step on the bag |
 | M03 | SS | 2nd | 0 | Ground ball to you. He takes off for third — you're right in his path. | **tag him** |
-| M04 | 2B | 1st, 3rd | 1 | Ground ball to you at second. | step on the bag *(don't chase 3rd)* |
+| M04a | 2B | 1st, 3rd | **2** | Ground ball to you at second. | step on the bag |
+| M04b | 2B | 1st, 3rd | **1** | Ground ball to you. The runner on third breaks for home. | **step on the bag OR throw home — both count** |
 | M05 | 1B | 2nd, 3rd | 1 | Ground ball to you next to the bag. | step on the bag |
 | M06 | C | 3rd | 1 | Ball at your feet. He breaks for home. | **tag him** |
 | M07 | C | loaded | 1 | Ball at your feet. He breaks for home. | step on the plate |
@@ -38,6 +39,56 @@ kid inferring it from text.
 
 **M08 is the counterintuitive one** — two runners on base and *nobody* is forced. There are
 currently zero scenarios in the whole app with runners on second and third.
+
+### M04a / M04b — the first dual-answer scenarios
+
+Alex: *"it is number of outs dependent"* and *"both are right… the answer detail weighs the two
+against each other, with the final sentence being check with your coach during the game."*
+
+**M04a (2 outs)** — one answer. Step on second, inning over. The run doesn't count even if he
+crosses the plate first. Straightforward.
+
+**M04b (1 out)** — **both `tagbase` and `home` are correct.** Third option (`third`) is the
+clean distractor: nobody is going to third.
+
+> **Takeaway:** "Both work. Ask your coach."
+> **Why:** "Stepping on second is the sure out, and the run scores. Throwing home can stop the
+> run, but it's a long throw and a miss puts two runners in scoring position. Ask your coach
+> what he wants — it depends on the score and the inning."
+
+Option-set geometry pre-verified clean for a 2B: rings at second/home/third, all pairwise
+distances well past the invariants.
+
+### The rule that keeps this rare
+
+Dual answers are powerful and would wreck the game if they spread. The line:
+
+- **Deciding factor visible in the picture** — outs, runners, ball location → **split into two
+  scenarios.** The kid should learn to read it. *(This is why M04 splits on outs at all.)*
+- **Deciding factor outside the picture** — score, inning, who's running, whose arm → **dual
+  answer, ending in "ask your coach."** *(This is why M04b stays dual at one out.)*
+
+**Guessability:** two correct of three options means a random tap is right 67% of the time,
+versus 33%. Negligible at 2 of 38; corrosive at 20%. Cap dual-answer scenarios at **roughly one
+per concept cluster**, and never inside a contrast pair — a pair's whole job is that the answer
+changes.
+
+### Engine change required
+
+`alsoOk?: OptionKey[]` — optional, defaults empty, backward compatible with all 56 existing
+scenarios.
+
+- `answer()`: correct if `key === ans || alsoOk.includes(key)`. Scoring, streak, and outs behave
+  normally — an out is an out.
+- **Both correct options render `✓`**, the chosen one highlighted. The kid must see that the
+  other one was also fine, or the note contradicts the screen.
+- Callout stays `OUT!`; the small line reads `ALSO GOOD` when the player picked an `alsoOk`
+  answer rather than the primary.
+- The correct-answer replay animates the player's own choice, not the primary.
+- **Validator:** `alsoOk` entries must be in `options` and must not equal `ans`; a scenario with
+  `alsoOk` must not carry a `pairId`; warn if more than one scenario per concept has it.
+
+Small session — same class as `toFielder`, and the two should ship together before Majors.
 
 ## Counting outs (4 total)
 
@@ -105,7 +156,7 @@ the bag with nobody backing up.**
 | ID | Pos | On | Outs | Play | Answer |
 |---|---|---|---|---|---|
 | M23 | 2B | 1st, 2nd | 1 | Pop up. Umpire calls infield fly. You catch it. | hold the ball |
-| M25 | 3B | 1st, 2nd | 0 | Pop up drifting toward you. Umpire calls infield fly. | hold the ball |
+| M25 | **P** | 1st, 2nd | 0 | Pop up right over your head on the mound. Umpire calls infield fly. | hold the ball |
 
 ---
 
@@ -137,8 +188,16 @@ behavior is identical in both frames, and only the other two bases differ.
 | **Steal coverage** | 0 | **3** |
 | Infield fly | 1 | 3 |
 
-Position spread runs 8–18% (SS highest at 7 of 38, 2B/C/LF/P lowest at 3 each) — inside the
-guideline. **"Tag the runner" becomes a correct answer for the first time** (M03, M06).
+Position spread after moving M25 from 3B to P: **3B 6 (16%), SS 6 (16%)**, 1B 5, CF 4, RF 4,
+P 4, 2B 3, C 3, LF 3. Inside the guideline.
+
+*(An earlier draft said "SS highest at 7" — wrong; 3B was the hot one at 7 before the M25 move.
+Five new force-vs-tag and infield-fly scenarios are third basemen, which is what tipped it.)*
+
+**"Tag the runner" becomes a correct answer for the first time** (M03, M06).
+
+**Note for the Majors batch: Majors currently has zero pitcher scenarios** (2B 4, SS 4, 3B 3,
+CF 2, then RF/LF/C/1B at 1 each, P at 0). Weight that batch toward P, C, LF, and 1B.
 
 ---
 
@@ -157,17 +216,28 @@ scenarios will want it.
 
 ---
 
-## What I need marked
+## What I need marked — narrowed to two
 
-1. **M04** — 2B with first and third, ground ball. I have him stepping on second and ignoring
-   the runner on third. Some coaches want a look home first at this age.
-2. **M09** — shortstop deep in the hole with two outs, throwing to second rather than third.
-   That's "closest force ends it." Confirm you'd teach the short throw over the lead runner
-   here, since it directly contradicts the Rookie rule.
-3. **M17** — first baseman charging a bunt and throwing to first with the second baseman
-   covering. Is that how your league plays it, or does the pitcher take that bag?
-4. **M13/M14/M15** — cutoff responsibilities. Research says shortstop for left and center,
-   second baseman for right. Confirm, or tell me how you assign it.
-5. **Anything missing** on force-vs-tag specifically. You said it's what comes up most — nine
-   scenarios is my read of "largest cluster," but if there's a version of the mistake you see
-   that isn't in here, that's the one worth adding.
+Three of my original five are settled by the research already in hand. They're flagged
+**confirm-or-override**, not decisions: say nothing and they ship as written.
+
+- **M09** *(confirm-or-override)* — two outs, shortstop deep in the hole, short force at second
+  rather than the lead runner at third. Research: *"If there are two outs, any force out ends
+  the half-inning."* Deliberately contradicts the Rookie rule; that contrast is the lesson.
+- **M17** *(confirm-or-override)* — second baseman covers first when the first baseman charges
+  a bunt. Research names *"first baseman charging without second baseman covering first base"*
+  as a common youth error, so 2B covering is the standard. Override if your pitcher takes it.
+- **M13/M14/M15** *(confirm-or-override)* — shortstop is the cutoff for left and center, second
+  baseman for right, 30–45 feet out. Straight from the research.
+
+**Resolved:** M04 → split into M04a (2 outs, one answer) and M04b (1 out, dual answer). See
+above.
+
+**The one that still needs you:**
+
+1. **Force-vs-tag gaps.** You said it's what comes up most. Nine scenarios is my read of
+   "largest cluster" — but if there's a version of the mistake you watch every Saturday that
+   isn't in here, that's the highest-value addition in the batch. The nine cover: he's not
+   forced so throw to first (M01, M08), he's not forced and running so tag him (M03, M06),
+   he's forced so use the bag (M02, M07), and mixed states where one runner is forced and one
+   isn't (M04, M05, plus existing #7).
