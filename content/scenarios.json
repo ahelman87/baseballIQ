@@ -1,0 +1,822 @@
+{
+ "scenarios": [
+  {
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Nobody on base",
+   "ask": "Ground ball to you at shortstop.",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "Nobody on? Throw to first.",
+   "why": "The only runner is the batter, and he is running to first base. Throw there."
+  },
+  {
+   "band": "Rookie",
+   "tag": "Counting outs",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 2,
+   "sit": "Nobody on base",
+   "ask": "Slow ground ball to you at first base. You are two steps from the bag.",
+   "opts": [
+    "tagbase",
+    "second",
+    "pitcher"
+   ],
+   "ans": "tagbase",
+   "big": "You're closer. Just step on it.",
+   "why": "You can beat the runner to the bag by yourself. No throw needed. Step on first."
+  },
+  {
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F1",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 0,
+   "sit": "Bases loaded",
+   "ask": "Ground ball right back to you on the mound.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Bases loaded? Get the run at home.",
+   "why": "Every runner has to run, so the man on third has to go home. Throw to the catcher and stop the run."
+  },
+  {
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runner on 1st",
+   "ask": "Ground ball to you at second base. You are two steps from the bag.",
+   "opts": [
+    "tagbase",
+    "first",
+    "third"
+   ],
+   "ans": "tagbase",
+   "big": "He has to run. Step on second.",
+   "why": "The batter is running to first, so the runner has to leave first base. You are already there. Step on the bag."
+  },
+  {
+   "band": "Minors",
+   "tag": "Counting outs",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 2,
+   "sit": "Runner on 3rd",
+   "ask": "Ground ball to you at shortstop. The runner takes off for home.",
+   "opts": [
+    "first",
+    "home",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Two outs? Take the easy one.",
+   "why": "Let him run. If you get the batter at first for the third out, his run does not count."
+  },
+  {
+   "band": "Minors",
+   "tag": "Who has to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Slow ground ball to you at third base. You have to run in and grab it.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Slow ball? Take the sure out.",
+   "why": "The ball took too long to get to you. The runner is already at second. Throw to first."
+  },
+  {
+   "band": "Minors",
+   "tag": "Who has to run",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "Ground ball to you at first base, right next to the bag.",
+   "opts": [
+    "tagbase",
+    "third",
+    "second"
+   ],
+   "ans": "tagbase",
+   "big": "Nobody on first? He can stay put.",
+   "why": "The runner on second does not have to run. You can't force him out. Step on first and take the easy out."
+  },
+  {
+   "band": "Rookie",
+   "tag": "Counting outs",
+   "you": "F6",
+   "hit": "line",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Nobody on base",
+   "ask": "Line drive! You catch it in the air at shortstop.",
+   "opts": [
+    "pitcher",
+    "first",
+    "second"
+   ],
+   "ans": "pitcher",
+   "big": "You caught it. That's the out.",
+   "why": "The batter is out as soon as you catch it. There is nobody else to get. Give the ball back to the pitcher."
+  },
+  {
+   "band": "Rookie",
+   "tag": "Who has to run",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 1,
+   "sit": "Bases loaded",
+   "ask": "The ball dribbles in front of the plate. You grab it.",
+   "opts": [
+    "tagbase",
+    "first",
+    "third"
+   ],
+   "ans": "tagbase",
+   "big": "Standing on the out? Take it.",
+   "why": "The runner on third has to run home. Home plate is right under your feet. Step on it."
+  },
+  {
+   "band": "Minors",
+   "tag": "Catches and tag ups",
+   "you": "F8",
+   "hit": "fly",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Fly ball to center field. You catch it.",
+   "opts": [
+    "second",
+    "home",
+    "third"
+   ],
+   "ans": "second",
+   "big": "After the catch, throw to second.",
+   "why": "The runner ran when the ball was hit. Throw to second base so he can't steal the extra base."
+  },
+  {
+   "band": "Majors",
+   "tag": "Infield in or back",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 0,
+   "extra": "Infield is back",
+   "sit": "Runner on 3rd",
+   "ask": "Ground ball to you at second base.",
+   "opts": [
+    "first",
+    "home",
+    "second"
+   ],
+   "ans": "first",
+   "big": "Playing back? Take the out.",
+   "why": "Your team is standing deep, so the run is going to score. That is okay. Get the out at first base."
+  },
+  {
+   "band": "Majors",
+   "tag": "Who has to run",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Ground ball to you at second base. You are three steps from the bag.",
+   "opts": [
+    "tagbase",
+    "first",
+    "third"
+   ],
+   "ans": "tagbase",
+   "big": "Everybody has to run. Take the closest base.",
+   "why": "Both runners have to run, so any base is an out. Second base is closest. Step on it and the inning is over.",
+   "pairId": "force-choice-2b"
+  },
+  {
+   "band": "Majors",
+   "tag": "Who has to run",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Ground ball to your right. It pulls you toward first base.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Go where the ball takes you.",
+   "why": "Second base is behind you now. First base is a force out too. Throw the way you are already moving.",
+   "pairId": "force-choice-2b"
+  },
+  {
+   "band": "Majors",
+   "tag": "Double plays",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    1
+   ],
+   "outs": 1,
+   "sit": "Runners on 1st and 3rd",
+   "ask": "Ground ball right at you at shortstop.",
+   "opts": [
+    "second",
+    "home",
+    "first"
+   ],
+   "ans": "second",
+   "big": "Get two outs, not one.",
+   "why": "The runner on first has to run. Throw to second to start a double play. Two outs ends the inning."
+  },
+  {
+   "band": "Majors",
+   "tag": "Double plays",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 1,
+   "sit": "Bases loaded",
+   "ask": "Hard ground ball right at you at shortstop.",
+   "opts": [
+    "second",
+    "home",
+    "third"
+   ],
+   "ans": "second",
+   "big": "Two outs beats one run.",
+   "why": "Throwing home only gets one out. Second base can get two and end the inning."
+  },
+  {
+   "band": "Minors",
+   "tag": "Watching the runner",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 2nd",
+   "ask": "Ground ball right at you at third base.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Look him back, then throw to first.",
+   "why": "He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first."
+  },
+  {
+   "band": "Majors",
+   "tag": "Catches and tag ups",
+   "you": "F9",
+   "hit": "fly",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 1,
+   "sit": "Runner on 3rd",
+   "ask": "Fly ball to right field. You catch it and the runner runs home.",
+   "opts": [
+    "home",
+    "third",
+    "second"
+   ],
+   "ans": "home",
+   "big": "He's going home. Throw home.",
+   "why": "He waited for your catch, then took off. Throw to the catcher and try to beat him to the plate."
+  },
+  {
+   "band": "Minors",
+   "tag": "Counting outs",
+   "you": "F7",
+   "hit": "fly",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 2,
+   "sit": "Runner on 3rd",
+   "ask": "Fly ball to left field. You catch it.",
+   "opts": [
+    "hold",
+    "home",
+    "third"
+   ],
+   "ans": "hold",
+   "big": "Count the outs first.",
+   "why": "There were already two outs. Your catch was the third one. The inning is over, so there is nobody to throw at."
+  },
+  {
+   "band": "Minors",
+   "tag": "Catches and tag ups",
+   "you": "F9",
+   "hit": "fly",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Short fly ball to right field. You catch it. The runner is already near second.",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "He left early. Throw behind him.",
+   "why": "He has to go back and touch first base. Throw to first before he gets there and he is out too."
+  },
+  {
+   "band": "Minors",
+   "tag": "Bunts",
+   "you": "F1",
+   "hit": "bunt",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "The batter bunts it down the first base line. You grab it.",
+   "opts": [
+    "first",
+    "second",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Take the out they give you.",
+   "why": "The runner got a head start on the bunt. Don't chase him. Throw to first for the sure out.",
+   "ruleNote": "bunt"
+  },
+  {
+   "band": "Majors",
+   "tag": "Bunts",
+   "you": "F5",
+   "hit": "bunt",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "The batter bunts up the third base line. You charge in and grab it.",
+   "opts": [
+    "first",
+    "third",
+    "second"
+   ],
+   "ans": "first",
+   "big": "You left your base. Throw to first.",
+   "why": "You ran off third base to get the ball. The shortstop is running over to cover it. First base is the safe out.",
+   "ruleNote": "bunt"
+  },
+  {
+   "band": "Majors",
+   "tag": "Long throws",
+   "you": "F7",
+   "hit": "fly",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "The ball gets past you in left field. The runner rounds third and heads home.",
+   "opts": [
+    "home",
+    "third",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Long throw home? Keep it low.",
+   "why": "Throw low and hard toward the plate. Aim at the third baseman standing in the middle, so he can grab it if the throw is off."
+  },
+  {
+   "band": "Minors",
+   "tag": "Where to run",
+   "you": "F9",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "mode": "go",
+   "ballTo": "F7",
+   "arrows": false,
+   "sit": "Runner on 1st",
+   "ask": "The ball is hit to left field. You play right field. Where do YOU run?",
+   "opts": [
+    "second",
+    "first",
+    "home"
+   ],
+   "ans": "second",
+   "big": "Back up the base.",
+   "why": "Outfielders never stand still. Run in behind second base. If the throw gets past everybody, you are there to stop it."
+  },
+  {
+   "band": "Minors",
+   "tag": "Where to run",
+   "you": "F1",
+   "hit": "fly",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "mode": "go",
+   "ballTo": "F8",
+   "arrows": false,
+   "sit": "Runner on 2nd",
+   "ask": "Base hit to center. The throw is going home. You are the pitcher. Where do YOU run?",
+   "opts": [
+    "home",
+    "second",
+    "first"
+   ],
+   "ans": "home",
+   "big": "Pitchers back up the throw.",
+   "why": "Run behind the catcher and stand way back. If the throw gets past him, you stop it and nobody moves up."
+  },
+  {
+   "band": "Minors",
+   "tag": "Rundowns",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "arrows": false,
+   "sit": "Runner stuck between 2nd and 3rd",
+   "ask": "You have the ball. The runner is caught in the middle.",
+   "opts": [
+    "second",
+    "third",
+    "tagrunner"
+   ],
+   "ans": "second",
+   "big": "Run him back the way he came.",
+   "why": "Chase him toward second base, not third. Then make one hard throw. The worst thing that happens is he ends up where he started."
+  },
+  {
+   "band": "Minors",
+   "tag": "Infield fly",
+   "you": "F6",
+   "hit": "pop",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 1,
+   "arrows": false,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "Pop up over the mound. The umpire yells INFIELD FLY — the batter is out.",
+   "opts": [
+    "hold",
+    "second",
+    "third"
+   ],
+   "ans": "hold",
+   "big": "Batter's already out. Just catch it.",
+   "why": "The umpire called him out so you can't drop it on purpose. Now nobody has to run. Catch the ball and hold it.",
+   "ruleNote": "infieldFly"
+  },
+  {
+   "band": "Majors",
+   "tag": "Long throws",
+   "you": "F8",
+   "hit": "fly",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "Deep fly ball to center. You catch it. The runner tags up and runs to third.",
+   "opts": [
+    "third",
+    "home",
+    "second"
+   ],
+   "ans": "third",
+   "big": "He's only going one base. Throw to third.",
+   "why": "He is not going home, so home is the wrong throw. Throw toward third base. The shortstop runs out to help you."
+  },
+  {
+   "band": "Minors",
+   "tag": "Long throws",
+   "you": "F9",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "The ball rolls into the corner in right field. You are very far from home plate.",
+   "opts": [
+    "cut2",
+    "home",
+    "third"
+   ],
+   "ans": "cut2",
+   "big": "Too far? Hit your relay man.",
+   "why": "You can't throw that far on a line. The second baseman runs out to meet you. Throw to him and he throws the rest of the way."
+  },
+  {
+   "band": "Majors",
+   "tag": "Tricky rules",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 2,
+   "arrows": false,
+   "sit": "Nobody on base",
+   "ask": "Strike three! But the ball bounces off your glove and rolls away.",
+   "opts": [
+    "first",
+    "hold",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Dropped strike three? He can run.",
+   "why": "If you drop strike three and first base is empty, the batter is allowed to run. Go get the ball and throw to first.",
+   "ruleNote": "dropped3rd"
+  },
+  {
+   "band": "Majors",
+   "tag": "Who has to run",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "The ball pulls you way off of first base. The runner heads for third.",
+   "opts": [
+    "first",
+    "third",
+    "second"
+   ],
+   "ans": "first",
+   "labels": {
+    "first": "Throw to 1st base"
+   },
+   "big": "The pitcher covers first.",
+   "why": "You are too far from the bag to get back in time. The pitcher runs over to cover first on every ball hit your way. Toss it to him, chest high. Forget the runner."
+  },
+  {
+   "band": "Majors",
+   "tag": "Watching the runner",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    1
+   ],
+   "outs": 1,
+   "extra": "Tie game",
+   "sit": "Runners on 1st and 3rd",
+   "ask": "Hard ground ball to you at third. The runner on third takes off for home!",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "He ran. Get him at the plate.",
+   "why": "He can't stop once he goes. You have the ball and he doesn't. Throw home and take the run away.",
+   "pairId": "r3-read"
+  },
+  {
+   "band": "Majors",
+   "tag": "Who has to run",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    1
+   ],
+   "outs": 1,
+   "sit": "Runners on 1st and 3rd",
+   "ask": "Hard ground ball to you at third base. The runner on third stays on the bag.",
+   "opts": [
+    "second",
+    "tagbase",
+    "home"
+   ],
+   "ans": "second",
+   "big": "Second base is empty, so third is not a force.",
+   "why": "Stepping on third does nothing — he does not have to run. The runner on first DOES have to run. Throw to second.",
+   "pairId": "r3-read"
+  },
+  {
+   "band": "Majors",
+   "tag": "Infield in or back",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 0,
+   "extra": "Infield is in",
+   "sit": "Runner on 3rd",
+   "ask": "Hard ground ball to you at shortstop.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Playing in? Stop the run.",
+   "why": "Your team moved up close for one reason: to keep him from scoring. Throw home."
+  },
+  {
+   "band": "Majors",
+   "tag": "Where to run",
+   "you": "F6",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "mode": "go",
+   "ballTo": "F9",
+   "arrows": false,
+   "sit": "Runner on 1st",
+   "ask": "Base hit to right field. You play shortstop. Where do YOU run?",
+   "opts": [
+    "second",
+    "third",
+    "first"
+   ],
+   "ans": "second",
+   "big": "Somebody has to cover the bag.",
+   "why": "The second baseman ran out to the grass to take the relay throw. That leaves second base empty. You cover it."
+  },
+  {
+   "band": "Majors",
+   "tag": "Long throws",
+   "you": "F8",
+   "hit": "line",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runner on 2nd",
+   "ask": "Base hit to center field. He rounds third and sprints for home.",
+   "opts": [
+    "home",
+    "cut2",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Two outs? Let it rip.",
+   "why": "There is nothing to save the ball for. Throw hard toward the plate on one bounce."
+  },
+  {
+   "band": "Majors",
+   "tag": "Counting outs",
+   "you": "F4",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 2,
+   "sit": "Bases loaded",
+   "ask": "Slow ground ball to your right at second base. You run in and grab it.",
+   "opts": [
+    "tagbase",
+    "first",
+    "home"
+   ],
+   "ans": "tagbase",
+   "big": "Slow ball? Take the closest base.",
+   "why": "You might not beat the batter to first. Everybody has to run, so second base is an out too — and it is much closer."
+  }
+ ]
+}

@@ -63,6 +63,7 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
   text-transform:uppercase;color:#2a1a00;background:linear-gradient(180deg,#ffd977,var(--amber-d));
   box-shadow:0 8px 0 #9d6a08,0 16px 34px rgba(255,180,40,.3);transition:.1s}
 .play:active{transform:translateY(6px);box-shadow:0 2px 0 #9d6a08}
+.play[disabled]{opacity:.55}
 .career{margin-top:16px;font-size:12.5px;color:var(--dim)}
 
 /* ═══════ SCOREBOARD ═══════ */
@@ -229,9 +230,9 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
     <div class="pickgrp">
       <div class="picklab">Pick your level</div>
       <div class="picks" id="pickDiff">
-        <button class="pick sel" data-d="1"><div class="ic">🧢</div><b>Rookie</b><i>ages 8–10</i></button>
-        <button class="pick" data-d="2"><div class="ic">⭐</div><b>All-Star</b><i>ages 11–12</i></button>
-        <button class="pick" data-d="3"><div class="ic">🔥</div><b>Pro</b><i>ages 13+</i></button>
+        <button class="pick" data-band="Rookie"><div class="ic">🧢</div><b>Rookie</b><i>ages 8 &amp; under</i></button>
+        <button class="pick sel" data-band="Minors"><div class="ic">⭐</div><b>Minors</b><i>ages 9–10</i></button>
+        <button class="pick" data-band="Majors"><div class="ic">🔥</div><b>Majors</b><i>ages 11–12</i></button>
       </div>
     </div>
     <div class="pickgrp">
@@ -246,7 +247,7 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
       <button class="tg on" id="tgVoice"><span>🗣️</span><span id="tgVoiceT">Read it to me</span></button>
       <button class="tg" id="tgClock"><span>⏱️</span><span id="tgClockT">No clock</span></button>
     </div>
-    <button class="play" id="btnPlay">Play Ball</button>
+    <button class="play" id="btnPlay" disabled>Play Ball</button>
     <div class="career" id="career"></div>
   </div>
 </section>
@@ -390,6 +391,7 @@ h1{font-family:var(--disp);font-size:clamp(42px,12.5vw,78px);line-height:.84;let
       <div class="tile"><div class="i">🏃</div><div class="n" id="tRuns">0</div><div class="l">Runs</div></div>
       <div class="tile"><div class="i">🔥</div><div class="n" id="tStreak">0</div><div class="l">In a row</div></div>
     </div>
+    <div class="rankn" id="posLine"></div>
     <div id="bars"></div>
     <div class="note" id="endNote"></div>
     <button class="play" id="btnAgain">Play Again</button>
@@ -436,6 +438,7 @@ const P = {
   F6:[414,476], F7:[262,300], F8:[500,232], F9:[738,300]
 };
 const POS = {F1:1,F2:2,F3:3,F4:4,F5:5,F6:6,F7:7,F8:8,F9:9};
+const POSNAME={F1:"P",F2:"C",F3:"1B",F4:"2B",F5:"3B",F6:"SS",F7:"LF",F8:"CF",F9:"RF"};
 const NS="http://www.w3.org/2000/svg";
 const $=s=>document.querySelector(s);
 const el=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
@@ -459,228 +462,18 @@ const SPEAK={first:"first base",second:"second base",third:"third base",home:"ho
   pitcher:"the pitcher",tagbase:"step on the bag",tagrunner:"tag the runner",hold:"hold the ball",
   cut2:"the second baseman",cut6:"the shortstop",cut3:"the first baseman",cut5:"the third baseman"};
 
-/* ═══════ SCENARIOS — plain words, one idea each ═══════ */
-const BANK=[
-/* ── ROOKIE ── */
-{d:1,tag:"Who has to run",you:"F6",hit:"ground",r:[0,0,0],outs:0,
- sit:"Nobody on base",ask:"Ground ball to you at shortstop.",
- opts:["first","second","home"],ans:"first",
- big:"Nobody on? Throw to first.",
- why:"The only runner is the batter, and he is running to first base. Throw there."},
-
-{d:1,tag:"Counting outs",you:"F3",hit:"ground",r:[0,0,0],outs:2,
- sit:"Nobody on base",ask:"Slow ground ball to you at first base. You are two steps from the bag.",
- opts:["tagbase","second","pitcher"],ans:"tagbase",
- big:"You're closer. Just step on it.",
- why:"You can beat the runner to the bag by yourself. No throw needed. Step on first."},
-
-{d:1,tag:"Who has to run",you:"F1",hit:"ground",r:[1,1,1],outs:0,
- sit:"Bases loaded",ask:"Ground ball right back to you on the mound.",
- opts:["home","first","second"],ans:"home",
- big:"Bases loaded? Get the run at home.",
- why:"Every runner has to run, so the man on third has to go home. Throw to the catcher and stop the run."},
-
-{d:1,tag:"Who has to run",you:"F4",hit:"ground",r:[1,0,0],outs:2,
- sit:"Runner on 1st",ask:"Ground ball to you at second base. You are two steps from the bag.",
- opts:["tagbase","first","third"],ans:"tagbase",
- big:"He has to run. Step on second.",
- why:"The batter is running to first, so the runner has to leave first base. You are already there. Step on the bag."},
-
-{d:1,tag:"Counting outs",you:"F6",hit:"ground",r:[0,0,1],outs:2,
- sit:"Runner on 3rd",ask:"Ground ball to you at shortstop. The runner takes off for home.",
- opts:["first","home","third"],ans:"first",
- big:"Two outs? Take the easy one.",
- why:"Let him run. If you get the batter at first for the third out, his run does not count."},
-
-{d:1,tag:"Who has to run",you:"F5",hit:"ground",r:[1,0,0],outs:1,
- sit:"Runner on 1st",ask:"Slow ground ball to you at third base. You have to run in and grab it.",
- opts:["first","second","third"],ans:"first",
- big:"Slow ball? Take the sure out.",
- why:"The ball took too long to get to you. The runner is already at second. Throw to first."},
-
-{d:1,tag:"Who has to run",you:"F3",hit:"ground",r:[0,1,0],outs:1,
- sit:"Runner on 2nd",ask:"Ground ball to you at first base, right next to the bag.",
- opts:["tagbase","third","second"],ans:"tagbase",
- big:"Nobody on first? He can stay put.",
- why:"The runner on second does not have to run. You can't force him out. Step on first and take the easy out."},
-
-{d:1,tag:"Counting outs",you:"F6",hit:"line",r:[0,0,0],outs:1,
- sit:"Nobody on base",ask:"Line drive! You catch it in the air at shortstop.",
- opts:["pitcher","first","second"],ans:"pitcher",
- big:"You caught it. That's the out.",
- why:"The batter is out as soon as you catch it. There is nobody else to get. Give the ball back to the pitcher."},
-
-{d:1,tag:"Who has to run",you:"F2",hit:"bunt",r:[1,1,1],outs:1,
- sit:"Bases loaded",ask:"The ball dribbles in front of the plate. You grab it.",
- opts:["tagbase","first","third"],ans:"tagbase",
- big:"Standing on the out? Take it.",
- why:"The runner on third has to run home. Home plate is right under your feet. Step on it."},
-
-{d:1,tag:"Catches and tag ups",you:"F8",hit:"fly",r:[1,0,0],outs:1,
- sit:"Runner on 1st",ask:"Fly ball to center field. You catch it.",
- opts:["second","home","third"],ans:"second",
- big:"After the catch, throw to second.",
- why:"The runner ran when the ball was hit. Throw to second base so he can't steal the extra base."},
-
-{d:1,tag:"Infield in or back",you:"F4",hit:"ground",r:[0,0,1],outs:0,extra:"Infield is back",
- sit:"Runner on 3rd",ask:"Ground ball to you at second base.",
- opts:["first","home","second"],ans:"first",
- big:"Playing back? Take the out.",
- why:"Your team is standing deep, so the run is going to score. That is okay. Get the out at first base."},
-
-/* ── ALL-STAR ── */
-{d:2,tag:"Who has to run",you:"F4",hit:"ground",r:[1,1,0],outs:2,
- sit:"Runners on 1st and 2nd",ask:"Ground ball to you at second base. You are three steps from the bag.",
- opts:["tagbase","first","third"],ans:"tagbase",
- big:"Everybody has to run. Take the closest base.",
- why:"Both runners have to run, so any base is an out. Second base is closest. Step on it and the inning is over."},
-
-{d:2,tag:"Who has to run",you:"F4",hit:"ground",r:[1,1,0],outs:2,
- sit:"Runners on 1st and 2nd",ask:"Ground ball to your right. It pulls you toward first base.",
- opts:["first","second","third"],ans:"first",
- big:"Go where the ball takes you.",
- why:"Second base is behind you now. First base is a force out too. Throw the way you are already moving."},
-
-{d:2,tag:"Double plays",you:"F6",hit:"ground",r:[1,0,1],outs:1,
- sit:"Runners on 1st and 3rd",ask:"Ground ball right at you at shortstop.",
- opts:["second","home","first"],ans:"second",
- big:"Get two outs, not one.",
- why:"The runner on first has to run. Throw to second to start a double play. Two outs ends the inning."},
-
-{d:2,tag:"Double plays",you:"F6",hit:"ground",r:[1,1,1],outs:1,
- sit:"Bases loaded",ask:"Hard ground ball right at you at shortstop.",
- opts:["second","home","third"],ans:"second",
- big:"Two outs beats one run.",
- why:"Throwing home only gets one out. Second base can get two and end the inning."},
-
-{d:2,tag:"Watching the runner",you:"F5",hit:"ground",r:[0,1,0],outs:0,
- sit:"Runner on 2nd",ask:"Ground ball right at you at third base.",
- opts:["first","second","third"],ans:"first",
- big:"Look him back, then throw to first.",
- why:"He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first."},
-
-{d:2,tag:"Catches and tag ups",you:"F9",hit:"fly",r:[0,0,1],outs:1,
- sit:"Runner on 3rd",ask:"Fly ball to right field. You catch it and the runner runs home.",
- opts:["home","third","second"],ans:"home",
- big:"He's going home. Throw home.",
- why:"He waited for your catch, then took off. Throw to the catcher and try to beat him to the plate."},
-
-{d:2,tag:"Counting outs",you:"F7",hit:"fly",r:[0,0,1],outs:2,
- sit:"Runner on 3rd",ask:"Fly ball to left field. You catch it.",
- opts:["hold","home","third"],ans:"hold",
- big:"Count the outs first.",
- why:"There were already two outs. Your catch was the third one. The inning is over, so there is nobody to throw at."},
-
-{d:2,tag:"Catches and tag ups",you:"F9",hit:"fly",r:[1,0,0],outs:1,
- sit:"Runner on 1st",ask:"Short fly ball to right field. You catch it. The runner is already near second.",
- opts:["first","second","home"],ans:"first",
- big:"He left early. Throw behind him.",
- why:"He has to go back and touch first base. Throw to first before he gets there and he is out too."},
-
-{d:2,tag:"Bunts",you:"F1",hit:"bunt",r:[1,0,0],outs:0,
- sit:"Runner on 1st",ask:"The batter bunts it down the first base line. You grab it.",
- opts:["first","second","third"],ans:"first",
- big:"Take the out they give you.",
- why:"The runner got a head start on the bunt. Don't chase him. Throw to first for the sure out."},
-
-{d:2,tag:"Bunts",you:"F5",hit:"bunt",r:[1,1,0],outs:0,
- sit:"Runners on 1st and 2nd",ask:"The batter bunts up the third base line. You charge in and grab it.",
- opts:["first","third","second"],ans:"first",
- big:"You left your base. Throw to first.",
- why:"You ran off third base to get the ball. The shortstop is running over to cover it. First base is the safe out."},
-
-{d:2,tag:"Long throws",you:"F7",hit:"fly",r:[0,1,0],outs:1,
- sit:"Runner on 2nd",ask:"The ball gets past you in left field. The runner rounds third and heads home.",
- opts:["home","third","second"],ans:"home",
- big:"Long throw home? Keep it low.",
- why:"Throw low and hard toward the plate. Aim at the third baseman standing in the middle, so he can grab it if the throw is off."},
-
-{d:2,tag:"Where to run",you:"F9",hit:"line",r:[1,0,0],outs:1,mode:"go",ballTo:"F7",arrows:false,
- sit:"Runner on 1st",ask:"The ball is hit to left field. You play right field. Where do YOU run?",
- opts:["second","first","home"],ans:"second",
- big:"Back up the base.",
- why:"Outfielders never stand still. Run in behind second base. If the throw gets past everybody, you are there to stop it."},
-
-{d:2,tag:"Where to run",you:"F1",hit:"fly",r:[0,1,0],outs:1,mode:"go",ballTo:"F8",arrows:false,
- sit:"Runner on 2nd",ask:"Base hit to center. The throw is going home. You are the pitcher. Where do YOU run?",
- opts:["home","second","first"],ans:"home",
- big:"Pitchers back up the throw.",
- why:"Run behind the catcher and stand way back. If the throw gets past him, you stop it and nobody moves up."},
-
-{d:2,tag:"Rundowns",you:"F6",hit:"ground",r:[0,1,0],outs:1,arrows:false,
- sit:"Runner stuck between 2nd and 3rd",ask:"You have the ball. The runner is caught in the middle.",
- opts:["second","third","tagrunner"],ans:"second",
- big:"Run him back the way he came.",
- why:"Chase him toward second base, not third. Then make one hard throw. The worst thing that happens is he ends up where he started."},
-
-/* ── PRO ── */
-{d:3,tag:"Infield fly",you:"F6",hit:"pop",r:[1,1,0],outs:1,arrows:false,
- sit:"Runners on 1st and 2nd",ask:"Pop up over the mound. The umpire yells INFIELD FLY — the batter is out.",
- opts:["hold","second","third"],ans:"hold",
- big:"Batter's already out. Just catch it.",
- why:"The umpire called him out so you can't drop it on purpose. Now nobody has to run. Catch the ball and hold it."},
-
-{d:3,tag:"Long throws",you:"F8",hit:"fly",r:[0,1,0],outs:1,
- sit:"Runner on 2nd",ask:"Deep fly ball to center. You catch it. The runner tags up and runs to third.",
- opts:["third","home","second"],ans:"third",
- big:"He's only going one base. Throw to third.",
- why:"He is not going home, so home is the wrong throw. Throw toward third base. The shortstop runs out to help you."},
-
-{d:3,tag:"Long throws",you:"F9",hit:"line",r:[1,0,0],outs:0,
- sit:"Runner on 1st",ask:"The ball rolls into the corner in right field. You are very far from home plate.",
- opts:["cut2","home","third"],ans:"cut2",
- big:"Too far? Hit your relay man.",
- why:"You can't throw that far on a line. The second baseman runs out to meet you. Throw to him and he throws the rest of the way."},
-
-{d:3,tag:"Tricky rules",you:"F2",hit:"bunt",r:[0,0,0],outs:2,arrows:false,
- sit:"Nobody on base",ask:"Strike three! But the ball bounces off your glove and rolls away.",
- opts:["first","hold","third"],ans:"first",
- big:"Dropped strike three? He can run.",
- why:"If you drop strike three and first base is empty, the batter is allowed to run. Go get the ball and throw to first."},
-
-{d:3,tag:"Who has to run",you:"F3",hit:"ground",r:[0,1,0],outs:1,
- sit:"Runner on 2nd",ask:"The ball pulls you way off of first base. The runner heads for third.",
- opts:["first","third","second"],ans:"first",
- labels:{first:"Throw to 1st base"},
- big:"The pitcher covers first.",
- why:"You are too far from the bag to get back in time. The pitcher runs over to cover first on every ball hit your way. Toss it to him, chest high. Forget the runner."},
-
-{d:3,tag:"Watching the runner",you:"F5",hit:"ground",r:[1,0,1],outs:1,extra:"Tie game",
- sit:"Runners on 1st and 3rd",ask:"Hard ground ball to you at third. The runner on third takes off for home!",
- opts:["home","first","second"],ans:"home",
- big:"He ran. Get him at the plate.",
- why:"He can't stop once he goes. You have the ball and he doesn't. Throw home and take the run away."},
-
-{d:3,tag:"Who has to run",you:"F5",hit:"ground",r:[1,0,1],outs:1,
- sit:"Runners on 1st and 3rd",ask:"Hard ground ball to you at third base. The runner on third stays on the bag.",
- opts:["second","tagbase","home"],ans:"second",
- big:"Second base is empty, so third is not a force.",
- why:"Stepping on third does nothing — he does not have to run. The runner on first DOES have to run. Throw to second."},
-
-{d:3,tag:"Infield in or back",you:"F6",hit:"ground",r:[0,0,1],outs:0,extra:"Infield is in",
- sit:"Runner on 3rd",ask:"Hard ground ball to you at shortstop.",
- opts:["home","first","second"],ans:"home",
- big:"Playing in? Stop the run.",
- why:"Your team moved up close for one reason: to keep him from scoring. Throw home."},
-
-{d:3,tag:"Where to run",you:"F6",hit:"line",r:[1,0,0],outs:1,mode:"go",ballTo:"F9",arrows:false,
- sit:"Runner on 1st",ask:"Base hit to right field. You play shortstop. Where do YOU run?",
- opts:["second","third","first"],ans:"second",
- big:"Somebody has to cover the bag.",
- why:"The second baseman ran out to the grass to take the relay throw. That leaves second base empty. You cover it."},
-
-{d:3,tag:"Long throws",you:"F8",hit:"line",r:[0,1,0],outs:2,
- sit:"Runner on 2nd",ask:"Base hit to center field. He rounds third and sprints for home.",
- opts:["home","cut2","second"],ans:"home",
- big:"Two outs? Let it rip.",
- why:"There is nothing to save the ball for. Throw hard toward the plate on one bounce."},
-
-{d:3,tag:"Counting outs",you:"F4",hit:"ground",r:[1,1,1],outs:2,
- sit:"Bases loaded",ask:"Slow ground ball to your right at second base. You run in and grab it.",
- opts:["tagbase","first","home"],ans:"tagbase",
- big:"Slow ball? Take the closest base.",
- why:"You might not beat the batter to first. Everybody has to run, so second base is an out too — and it is much closer."}
-];
+/* ═══════ SCENARIOS — loaded from content/scenarios.json ═══════
+   The bank lives in one JSON file so scenarios can be added without touching
+   this script (brief Phase 2). Play Ball stays disabled until it arrives; on
+   failure the button becomes the retry affordance — never a dead screen. */
+let BANK=[];
+function loadBank(){
+  const b=$("#btnPlay");b.disabled=true;b.textContent="Loading plays\u2026";
+  fetch("content/scenarios.json")
+    .then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+    .then(j=>{BANK=j.scenarios;b.disabled=false;b.textContent="Play Ball";})
+    .catch(()=>{b.disabled=false;b.textContent="Can't load the plays \u2014 tap to retry";});
+}
 
 /* ═══════ SOUND ═══════ */
 const SFX={ctx:null,on:true,
@@ -896,31 +689,36 @@ let last=performance.now();
 (function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;stepParts(dt);stepTrail(dt);requestAnimationFrame(loop);})(last);
 
 /* ═══════ GAME ═══════ */
-const G={diff:1,target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
-  pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99};
-const LIMITS={1:22,2:18,3:14};
+// TEMPORARY: Rookie has only 6 scenarios post-migration and repeats ~2x per game.
+// Flip back to "Rookie" once it reaches ~12. See Addendum B §B5.
+const G={band:"Minors",target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
+  pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99,pos:[]};
+/* Clock allowances SHIFT down a band — an 8U player needs more time than the
+   old ages-8-to-10 Rookie allowance, not the same. */
+const LIMITS={Rookie:26,Minors:22,Majors:18};
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-function buildDeck(d){
-  /* A1.4: cycle within the level rather than escalating — a repeat is a better
-     experience than an 8-year-old getting Pro scenarios at play 12 of a Long game. */
-  const core=shuffle(BANK.filter(s=>s.d===d));
+function buildDeck(band){
+  /* A1.4: cycle within the band rather than escalating — a repeat is a better
+     experience than an 8-year-old getting Majors scenarios at play 12 of a Long game. */
+  const core=shuffle(BANK.filter(s=>s.band===band));
   /* Guards for future filters (position, concept): an empty core would spin the
      fill loop forever, and returning [] would crash nextPlay (G.i%0 is NaN).
      Never break for the player; be unmissable for whoever wrote the bad filter. */
-  if(!core.length){console.error("buildDeck: empty filter for level "+d);return shuffle(BANK.slice());}
+  if(!core.length){console.error("buildDeck: empty filter for band "+band);return shuffle(BANK.slice());}
   let deck=core.slice();
   while(deck.length<G.target+6)deck=deck.concat(shuffle(core.slice()));
   if(core.length<2)return deck;  /* one scenario: repeats are unavoidable, skip repair */
-  /* Repair pass: no scenario twice in a row. Scans EVERY adjacency including the
-     modulo wrap (nextPlay indexes G.deck[G.i%len], so last->first is an adjacency
-     too) and swaps the offender forward; repeats until a full scan is clean.
+  /* Repair pass: no scenario twice in a row, AND no position twice in a row
+     (B6 rotation — the catcher kid sees the whole field, not one bag). Scans
+     EVERY adjacency including the modulo wrap (nextPlay indexes G.deck[G.i%len])
+     and swaps the offender forward; repeats until a full scan is clean.
      Converges in 1-2 passes; hard-capped so a pathological deck returns as-is. */
   const n=deck.length;
   for(let pass=0;pass<8;pass++){
     let dirty=false;
     for(let i=0;i<n;i++){
       const j=(i+1)%n,k=(j+1)%n;
-      if(deck[i]===deck[j]){[deck[j],deck[k]]=[deck[k],deck[j]];dirty=true;}
+      if(deck[i]===deck[j]||deck[i].you===deck[j].you){[deck[j],deck[k]]=[deck[k],deck[j]];dirty=true;}
     }
     if(!dirty)break;
   }
@@ -965,6 +763,7 @@ const stopClock=()=>{G.answered=true;cancelAnimationFrame(G.tRaf);};
 
 function nextPlay(){
   const s=G.deck[G.i%G.deck.length];G.i++;G.cur=s;G.answered=false;
+  G.pos.push(POSNAME[s.you]);  /* B6 rotation: surfaced on the results screen */
   clearTargets();clearTrail();gFx.textContent="";
   $("#coach").classList.remove("on");$("#opts").classList.remove("locked");
   $("#callout").classList.remove("show","good","bad");
@@ -1134,6 +933,7 @@ function finish(){
   const rk=RANKS.find(r=>acc>=r[0])||RANKS[RANKS.length-1];
   $("#medal").textContent=rk[1];$("#rankName").textContent=rk[2];$("#rankLine").textContent=rk[3];
   $("#tOuts").textContent=G.outs;$("#tRuns").textContent=G.runs;$("#tStreak").textContent=G.best;
+  $("#posLine").textContent="You played: "+[...new Set(G.pos)].join(", ");
   const bars=$("#bars");bars.textContent="";
   const tags=Object.entries(G.byTag).sort((a,b)=>(a[1].r/a[1].n)-(b[1].r/b[1].n));
   tags.forEach(([t,v])=>{
@@ -1167,7 +967,7 @@ function saveCareer(n,r){try{
 const show=id=>document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
 document.querySelectorAll("#pickDiff .pick").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#pickDiff .pick").forEach(x=>x.classList.remove("sel"));
-  b.classList.add("sel");G.diff=+b.dataset.d;SFX.init();SFX.tone(760,.06,"triangle",.1);}));
+  b.classList.add("sel");G.band=b.dataset.band;SFX.init();SFX.tone(760,.06,"triangle",.1);}));
 document.querySelectorAll("#pickLen .pick").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#pickLen .pick").forEach(x=>x.classList.remove("sel"));
   b.classList.add("sel");G.target=+b.dataset.o;SFX.init();SFX.tone(760,.06,"triangle",.1);}));
@@ -1188,13 +988,14 @@ $("#btnVoice").addEventListener("click",()=>{VOICE.on=!VOICE.on;
   if(!VOICE.on)VOICE.stop();else if(G.cur)VOICE.say(plain(G.cur.ask));});
 
 function startGame(){
+  if(!BANK.length)return;  /* deck not loaded yet (or failed) — Play Ball handles retry */
   SFX.init();if(VOICE.ready)VOICE.pick();
-  G.deck=buildDeck(G.diff);G.i=0;G.outs=0;G.runs=0;G.streak=0;G.best=0;
-  G.pts=0;G.right=0;G.played=0;G.byTag={};G.limit=LIMITS[G.diff];
+  G.deck=buildDeck(G.band);G.i=0;G.outs=0;G.runs=0;G.streak=0;G.best=0;
+  G.pts=0;G.right=0;G.played=0;G.byTag={};G.limit=LIMITS[G.band];G.pos=[];
   $("#pips").textContent="";
   show("game");paintBoard();nextPlay();
 }
-$("#btnPlay").addEventListener("click",startGame);
+$("#btnPlay").addEventListener("click",()=>{if(!BANK.length){loadBank();return;}startGame();});
 $("#btnAgain").addEventListener("click",startGame);
 $("#btnHome").addEventListener("click",()=>{VOICE.stop();show("start");loadCareer();});
 document.addEventListener("keydown",e=>{
@@ -1205,7 +1006,7 @@ document.addEventListener("keydown",e=>{
   } else if($("#start").classList.contains("on")&&(e.key===" "||e.key==="Enter")){e.preventDefault();startGame();}
 });
 document.addEventListener("touchstart",()=>SFX.init(),{once:true,passive:true});
-loadCareer();
+loadCareer();loadBank();
 </script>
 <script>
 /* Offline shell: see sw.js. Registration failure (old browser, private mode)

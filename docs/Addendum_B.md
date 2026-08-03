@@ -3,45 +3,48 @@
 Derived from the youth-development scope-and-sequence research (USA Baseball ADM,
 Little League, PCA). Supersedes the content guidance in Addendum §A3.3.
 
-**Status: DRAFT — needs Alex's corrections at §B7 before any scenarios are authored.**
+**Status: APPROVED.** §B7 resolved — see §B8. Scope narrowed to **three bands** (Rookie /
+Minors / Majors); the 14U/Juniors band is deferred, since McCabe Park tops out at Majors.
 
 ---
 
-## B1. The decision that has to be made first: four bands, not three
+## B1. Three bands, matching the developmental research
 
-Current levels straddle the developmental bands:
+The original levels straddled the developmental bands:
 
 ```
-  research:  8U (≤8)    10U (9–10)    12U (11–12)    14U (13–14)
-  ours:      Rookie (ages 8–10) ......  All-Star (11–12)  Pro (13+)
+  research:  8U (≤8)    10U (9–10)    12U (11–12)    [14U — out of scope]
+  ours was:  Rookie (ages 8–10) ......  All-Star (11–12)  Pro (13+)
 ```
 
-**Rookie spans two bands with different cognitive ceilings.** An 8U player operates in early
-concrete-operational thought — attention is on the ball's trajectory, not on spatial
-relationships between runners and bases. Decisions must be **single-variable**: field it,
-throw to the one predetermined target. A 10U player handles **dual-variable conditional
-logic** — outs *and* runners, before the pitch.
+**The old Rookie spanned two bands with different cognitive ceilings.** An 8U player operates
+in early concrete-operational thought — attention is on the ball, not on spatial relationships
+between runners and bases. Decisions must be **single-variable**. A 10U player handles
+**dual-variable conditional logic** — outs *and* runners, before the pitch. One tier cannot
+serve both, and the old Rookie tier contained #11 (infield depth), a 12U concept.
 
-One tier cannot serve both. Today's Rookie tier contains #11 (infield depth), which the
-research places at 12U.
+**Three bands, shifted down — not the old three relabeled:**
 
-**Recommendation: move to four bands matching the research.**
-
-| Tier | Ages | Cognitive ceiling |
+| Band | Ages | Cognitive ceiling |
 |---|---|---|
-| **T-Ball / Rookie** | 8U | Single variable. One ball, one target. |
-| **Minors** | 9–10 | Two variables. Outs + runners. Cutoffs, steals, rundowns. |
+| **Rookie** | 8 & under | Single variable. Throw ahead of the lead runner. |
+| **Minors** | 9–10 | Two variables. Outs + runners. Cutoffs, steals, rundowns, infield fly. |
 | **Majors** | 11–12 | Multi-variable + conditional rules. DPs, depth, dropped third strike. |
-| **Juniors** | 13–14 | Full field, full rules. Tandem relays, wheel play, pickoffs. |
 
-Cost: re-tag 36 scenarios (data only), one extra button, ~33% more content to fill
-(≈140 vs ≈108). **This is cheap now and expensive after 70 new scenarios are written
-against the wrong structure.** Decide before authoring.
+### Why Juniors (13–14) is deferred
 
-Use league-familiar names over generic ones — a Little League parent knows what Minors and
-Majors mean, and it removes the need to explain the tiers.
+McCabe Park tops out at Majors, so 14U content would serve nobody today. Two things make the
+deferral cheap to reverse:
 
----
+- **Nothing in the existing 36 needs it.** All eleven current Pro scenarios fit Majors.
+- **The three cells lost are exactly the three the renderer can't draw** — tandem cutoffs
+  (two relay fielders), the wheel play (multi-fielder rotation), and holding runners/pickoffs
+  (illegal below 13 regardless). The 14U tree data stays documented in §B3 for whenever it
+  reopens.
+
+Cost of the migration: re-tag 36 scenarios, shift the clock values, and rename the tiers.
+**Three buttons stay three buttons — no layout work.** Do it before authoring; the same change
+after 100 new scenarios is a rewrite.
 
 ## B2. Audit findings against the existing 36
 
@@ -74,37 +77,40 @@ of those same concepts don't exist yet.
 
 ## B3. The concept progression tree
 
+*(14U column removed per §B1. Deferred cells: tandem cutoffs, wheel play,
+holding runners/pickoffs — all 14U-only, all beyond the current renderer.)*
+
 The core deliverable. Each concept has a **version per band**, not a single home. `—` means
 the concept does not exist at that band.
 
 ### Ball-in-hand concepts
 
-| Concept | 8U | 10U | 12U | 14U |
-|---|---|---|---|---|
-| **Force plays** | Nobody on → throw to first. One target. | Force vs. tag: who *has* to run. Bases loaded → home. | Pick among several forces — closest, surest. | Force + slide-rule implications. |
-| **Counting outs** | — | Two outs → any force ends it. | Outs change the *priority*: two outs vs. one run. | Outs + score + inning. |
-| **Lead runner** | Stop the lead runner. Don't chase backward. | Look him back, then throw. | Read whether he broke or froze. | Read the break with the game on the line. |
-| **Tag-ups** | — | Catch, then throw to the base he left. | Halfway reads; where he's going vs. where he was. | Tag from second on a deep fly. |
-| **Cutoffs & relays** | — | Single cutoff. SS for LF/CF, 2B for RF, 30–45 ft out. | Long throw → hit the cutoff, keep it low. | Tandem relays, 15–20 ft apart. |
-| **Double plays** | — | — | Feed the bag, turn two. | DP depth and positioning. |
-| **Bunts** | — *(restricted at 8U)* | Corner assignments; 2B covers first. | Bunt with runners on — who covers what. | Wheel play rotation. |
-| **Rundowns** | — | Two throws max, run him back. | Rundown with a trailing runner. | Full-speed with multiple runners. |
-| **Infield depth** | — | — | In / back / DP depth and what each means. | Depth by score and inning. |
+| Concept | Rookie (8U) | Minors (10U) | Majors (12U) |
+|---|---|---|---|
+| **Force plays** | Nobody on → throw to first. One target. | Force vs. tag: who *has* to run. Bases loaded → home. | Pick among several forces — closest, surest. |
+| **Counting outs** | — | Two outs → any force ends it. | Outs change the *priority*: two outs vs. one run. |
+| **Lead runner** | Stop the lead runner. Don't chase backward. | Look him back, then throw. | Read whether he broke or froze. |
+| **Tag-ups** | — | Catch, then throw to the base he left. | Halfway reads; where he's going vs. where he was. |
+| **Cutoffs & relays** | — | Single cutoff. SS for LF/CF, 2B for RF, 30–45 ft out. | Long throw → hit the cutoff, keep it low. |
+| **Double plays** | — | — | Feed the bag, turn two. |
+| **Bunts** | — *(restricted at 8U)* | Corner assignments; 2B covers first. | Bunt with runners on — who covers what. |
+| **Rundowns** | — | Two throws max, run him back. | Rundown with a trailing runner. |
+| **Infield depth** | — | — | In / back / DP depth and what each means. |
 
 ### Off-ball concepts — the ones youth teams botch most
 
-| Concept | 8U | 10U | 12U | 14U |
-|---|---|---|---|---|
-| **Don't swarm** | Everyone moves on every pitch — but only one player fields it. | — | — | — |
-| **Backing up** | Pitcher backs up first on balls to the left side. OF charge in as a second wall. | Back up the base the throw is going to. | Cover the bag the relay man vacated. | Full rotation assignments. |
-| **Steal coverage** | — | SS covers 2nd vs. RH batter, 2B vs. LH. The other backs up. | Same, plus timing off the catcher's release. | Daylight plays, pickoffs, holding runners. |
+| Concept | Rookie (8U) | Minors (10U) | Majors (12U) |
+|---|---|---|---|
+| **Don't swarm** | Everyone moves on every pitch — but only one player fields it. | — | — |
+| **Backing up** | Pitcher backs up first on balls to the left side. OF charge in as a second wall. | Back up the base the throw is going to. | Cover the bag the relay man vacated. |
+| **Steal coverage** | — | SS covers 2nd vs. RH batter, 2B vs. LH. The other backs up. | Same, plus timing off the catcher's release. |
 
 ### Rules that surprise kids
 
-| Concept | 8U | 10U | 12U | 14U |
-|---|---|---|---|---|
-| **Infield fly** | — | Umpire calls it → batter is out, no force left. | What to do if it's dropped. | — |
-| **Dropped third strike** | — *(barred)* | — *(barred)* | First base open or two outs → throw to first. | Full rule. |
+| Concept | Rookie (8U) | Minors (10U) | Majors (12U) |
+|---|---|---|---|
+| **Infield fly** | — | Umpire calls it → batter is out, no force left. | What to do if it's dropped. |
+| **Dropped third strike** | — *(barred)* | — *(barred)* | First base open or two outs → throw to first. |
 
 ---
 
@@ -167,20 +173,22 @@ baseman — where do you go?"* Renders today with no new machinery, and it teach
 signature error, which isn't *who covers* but both middle infielders converging on the bag
 with nobody backing up.
 
-### Still out of reach — don't author against these
+### No longer a concern
 
-Tandem cutoffs (two relay fielders) and the wheel play (multi-fielder rotation) need
-renderer work beyond the above. Defer those 14U cells until the engine can draw them.
+Tandem cutoffs and the wheel play were the two cells needing renderer work beyond the above.
+Both were 14U-only and left with the Juniors band (§B1), so `ballZone` and `breaks` are the
+complete list of renderer additions required.
 
 ## B5. Content targets
 
 The position picker is deferred (§B6), so the content shape is driven by the **concept ×
 band tree in §B3**, not by a position grid.
 
-The tree has **39 live cells** (concept/band combinations that aren't `—`).
+The tree has **27 live cells** (concept/band combinations that aren't `—`), down from 39
+when Juniors was in scope.
 
-1. **Every live cell ≥ 3 scenarios**, including at least one contrast pair. Floor ≈ 117;
-   target **~140**, weighting foundational cells (force plays, backing up) higher than
+1. **Every live cell ≥ 3 scenarios**, including at least one contrast pair. Floor ≈ 81;
+   target **~100**, weighting foundational cells (force plays, backing up) higher than
    narrow ones (infield fly).
 2. **Position spread is now a constraint, not a driver.** Since the goal is a kid learning
    what *every* position does, no position should fall below ~7% of the bank or rise above
@@ -262,28 +270,23 @@ Rotation costs a few lines in the deck builder and no UI.
 The research endorses specialization at **14U**. If the Juniors band ever gets deep enough
 per position, a position filter there is defensible. Nowhere below it.
 
-## B7. Corrections needed from Alex before specs are generated
+## B7. Resolved
 
-The research describes youth baseball generally. You coach *this* league. Where these
-disagree, you win — and catching it here costs nothing, while catching it after 70 scenarios
-are written costs a rewrite.
+1. **Three bands** — Rookie / Minors / Majors (§B1). Juniors deferred.
+2. **League rules** — confirmed against Little League official rules:
+   - **Dropped third strike:** Majors and above only. In Minor League and Tee Ball the batter
+     is out on strike three regardless of a drop. *(One local check: a league may elect to
+     apply the Minor rule to Majors for the regular season.)*
+   - **Leadoffs:** not permitted below 13, so **no pickoffs and no balks anywhere in scope.**
+   - **Steals:** legal from Minors up, but only once the pitch reaches the batter.
+3. **Tree** — accepted as written in §B3.
+4. **Contrast pairs** — drafted from the research's "common youth errors" column for Alex to
+   react to rather than generate. Does not block the migration session.
+5. **Nothing cut** from the tree beyond the deferred 14U cells.
 
-1. **Four bands, or keep three?** §B1. Blocks everything downstream. *(Position picker:
-   answered — deferred, §B6.)*
-2. **Does McCabe Park / your Little League match the assumed rules?** Specifically: is
-   bunting allowed at 8U, are dropped third strikes live at Minors, are leadoffs permitted
-   before 13U? Local rules override the general case, and scenarios that are illegal in your
-   league teach the wrong thing.
-3. **Is anything in §B3 wrong for how you actually coach it?** The likeliest candidates are
-   cutoff responsibilities (SS for LF/CF, 2B for RF) and bunt coverage, both of which vary by
-   coach.
-4. **Which contrast pairs do you already know are worth writing?** The ones you've watched
-   kids blow. This is the input no research can produce and the thing that makes the bank
-   good rather than merely complete.
-5. **Anything on the tree you'd cut as not worth teaching at all**, even where the research
-   endorses it.
+## B8. Session order
 
-Once §B7 is answered, the next artifact is ~140 one-line scenario specs against the tree
-in §B3, band by band — one line each, reviewable in about thirty minutes — and only after those are
-approved does Claude Code write the copy, using the existing 36 as few-shot examples rather
-than a style description.
+1. **Migration** — extract `content/scenarios.json`, three-band schema, retag the 36,
+   validator band-legality, position rotation. *No renderer work.*
+2. **Renderer** — `ballZone` and `breaks` (§B4). Must land before authoring.
+3. **Content** — Rookie first (§B5 ladder), then Minors, then Majors.

@@ -15,8 +15,8 @@
 */
 "use strict";
 
-const CACHE = "shell-v1";                              // bump only if SHELL changes
-const SHELL = ["/", "/favicon.ico", "/apple-touch-icon.png"];
+const CACHE = "shell-v2";                              // bump only if SHELL changes
+const SHELL = ["/", "/favicon.ico", "/apple-touch-icon.png", "/content/scenarios.json"];
 const NAV_TIMEOUT_MS = 2500;                           // stall budget before serving cache
 
 self.addEventListener("install", e => {
@@ -60,6 +60,33 @@ self.addEventListener("fetch", e => {
         new Promise(r => setTimeout(() => r(null), NAV_TIMEOUT_MS)) // stalled → cache
       ]);
       return winner && winner.ok ? winner : cached;    // error page while cached → cache
+    })());
+    return;
+  }
+
+  /* The scenario bank gets the same treatment as navigations — network-first
+     with the stall race — NOT the cache-first shell path below. Cache-first
+     would strand a content fix behind service-worker update timing, which is
+     the exact failure mode this worker exists to prevent. Order matters: this
+     branch must run before the SHELL check, which also lists this path (for
+     install-time precache). */
+  if (url.pathname === "/content/scenarios.json") {
+    const net = fetch(req);
+    e.waitUntil(
+      net.then(res => {
+        if (!res.ok) return;
+        const copy = res.clone();            // clone NOW — see the navigation branch
+        return caches.open(CACHE).then(c => c.put(req, copy));
+      }).catch(() => {})
+    );
+    e.respondWith((async () => {
+      const cached = await caches.match(req);
+      if (!cached) return net;
+      const winner = await Promise.race([
+        net.catch(() => null),
+        new Promise(r => setTimeout(() => r(null), NAV_TIMEOUT_MS))
+      ]);
+      return winner && winner.ok ? winner : cached;
     })());
     return;
   }

@@ -27,17 +27,20 @@ function slice(startMarker, endMarker) {
 
 let P, anchorFor, label, BADGE, BADGEF, BANK;
 try {
+  /* Geometry still comes from index.html — its single source of truth. */
   const src = [
     slice("const P = {", "const POS"),
     slice("function anchorFor(", "/* two label sets"),
     slice("const L_THROW=", "/* spoken version"),          // L_THROW, L_GO, label
     slice("const BADGE=", "function drawTargets"),         // BADGE + BADGEF
-    slice("const BANK=[", "/* ═══════ SOUND"),
-    "return { P, anchorFor, label, BADGE, BADGEF, BANK };",
+    "return { P, anchorFor, label, BADGE, BADGEF };",
   ].join("\n");
-  ({ P, anchorFor, label, BADGE, BADGEF, BANK } = new Function(src)());
+  ({ P, anchorFor, label, BADGE, BADGEF } = new Function(src)());
+  /* Scenarios come from the JSON — the file authors actually edit. */
+  BANK = JSON.parse(readFileSync(join(root, "content/scenarios.json"), "utf8")).scenarios;
+  if (!Array.isArray(BANK) || !BANK.length) throw new Error("scenarios.json has no scenarios array");
 } catch (e) {
-  console.error("EXTRACTION FAILED — index.html structure changed?\n  " + e.message);
+  console.error("EXTRACTION FAILED — index.html structure or scenarios.json changed?\n  " + e.message);
   process.exit(2);
 }
 
@@ -48,12 +51,40 @@ const ALLOW = new Set(["shortstop", "everybody", "outfielders"]); // docs/allowe
 const SELF = new Set(["tagbase", "hold", "tagrunner"]);           // anchored to YOUR fielder
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
+/* ── band rules (Addendum B §B1/§B7) ─────────────────────────────────────────
+   Rookie 8U · Minors 9–10 · Majors 11–12. Juniors deferred — McCabe Park tops
+   out at Majors. ruleNote gates concepts illegal at lower bands per Little
+   League rules, not preference. leadoff is ALWAYS an error: no leadoffs below
+   13 means no pickoffs and no balks anywhere in scope. */
+const BAND_ORDER = ["Rookie", "Minors", "Majors"];
+const RULE_MIN = { bunt: "Minors", infieldFly: "Minors", dropped3rd: "Majors" };
+/* Next session's renderer fields — a silently ignored field is worse than a
+   missing one, so their presence is an error until the engine honors them. */
+const NOT_YET = ["ballZone", "breaks"];
+
 const errors = [], warns = [];
 const err = m => errors.push(m);
 const warn = m => warns.push(m);
 
+const pairGroups = {};
+
 BANK.forEach((s, idx) => {
   const id = `#${String(idx + 1).padStart(2)} [${s.you} ${s.tag}]`;
+
+  /* ── band + schema rules ── */
+  const bi = BAND_ORDER.indexOf(s.band);
+  if (bi < 0) err(`${id} band "${s.band}" is not one of ${BAND_ORDER.join("/")}`);
+  if ("d" in s) err(`${id} still carries the legacy numeric "d" — migration incomplete`);
+  for (const f of NOT_YET) if (f in s) err(`${id} has "${f}" — the engine cannot honor it yet (next session)`);
+  if (s.ruleNote !== undefined) {
+    if (s.ruleNote === "leadoff") err(`${id} ruleNote "leadoff" — no leadoffs below 13, so nothing in scope may carry it`);
+    else if (!(s.ruleNote in RULE_MIN)) err(`${id} unknown ruleNote "${s.ruleNote}"`);
+    else if (bi >= 0 && bi < BAND_ORDER.indexOf(RULE_MIN[s.ruleNote]))
+      err(`${id} ruleNote "${s.ruleNote}" is illegal at ${s.band} (min: ${RULE_MIN[s.ruleNote]})`);
+  }
+  if (s.hit === "bunt" && s.ruleNote !== "bunt")
+    err(`${id} hit:"bunt" without ruleNote:"bunt" — the band gate cannot see it`);
+  if (s.pairId) (pairGroups[s.pairId] = pairGroups[s.pairId] || []).push({ id, band: s.band });
 
   /* ── data rules ── */
   if (!Array.isArray(s.opts) || s.opts.length !== 3) err(`${id} has ${s.opts?.length} options, need exactly 3`);
@@ -101,8 +132,16 @@ BANK.forEach((s, idx) => {
   }
 });
 
+/* ── pairId groups: exactly two halves, same band ── */
+for (const [pid, members] of Object.entries(pairGroups)) {
+  if (members.length !== 2) err(`pairId "${pid}" has ${members.length} member(s), need exactly 2 (${members.map(m => m.id.trim()).join(", ")})`);
+  else if (members[0].band !== members[1].band) err(`pairId "${pid}" spans bands ${members[0].band}/${members[1].band} — halves must sit together`);
+}
+
 /* ── report ── */
-console.log(`audited ${BANK.length} scenarios`);
+const perBand = {};
+BANK.forEach(s => perBand[s.band] = (perBand[s.band] || 0) + 1);
+console.log(`audited ${BANK.length} scenarios — ` + BAND_ORDER.map(b => `${b} ${perBand[b] || 0}`).join(" · "));
 if (warns.length) { console.log(`\n${warns.length} warning(s):`); warns.forEach(w => console.log("  ⚠ " + w)); }
 if (errors.length) { console.log(`\n${errors.length} ERROR(S):`); errors.forEach(e => console.log("  ✘ " + e)); }
 else console.log("0 errors" + (warns.length ? "" : ", 0 warnings") + " — bank is clean");

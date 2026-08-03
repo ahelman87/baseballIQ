@@ -3,11 +3,15 @@
 Youth baseball situational-awareness game. Static PWA. Vite + TypeScript, no framework.
 Full spec: @docs/BUILD_BRIEF.md
 
-## Current state: Phase 0
+## Current state
 
-There is no build step yet. The whole app is a single `index.html` with an inline `<script>` and
-zero dependencies. The `src/` module tree described in the brief arrives in Phase 1 — until then,
-paths like `src/game/geometry.ts` are a target, not a location.
+No build step. The app is `index.html` (inline `<script>`, zero dependencies) plus
+`content/scenarios.json` (the scenario bank, loaded at runtime, precached by `sw.js`) and
+`scripts/audit-bank.mjs` (the validator). The `src/` module tree described in the brief is
+still a target, not a location.
+
+Scenarios carry a `band` — Rookie (8U) / Minors (9–10) / Majors (11–12), per
+`docs/Addendum_B.md`. Bands are developmental, NOT difficulty levels. The numeric `d` is gone.
 
 ## Naming
 Name is "Baseball IQ", URL is **baseball-iq-sandy.vercel.app**. It is generic and may change.
@@ -40,9 +44,11 @@ product name on purpose — deriving it from the app name means a rename orphans
 progress. `Store` falls back to an in-memory map when localStorage throws (Safari private mode).
 
 ## Adding scenarios
-Phase 2 onward: edit `content/scenarios.json` only, then run `npm run validate`.
-New scenarios must pass the layout invariants, not just the data rules — see the brief.
-A scenario that reads fine can still be visually ambiguous on the field.
+Edit `content/scenarios.json` only, then run `node scripts/audit-bank.mjs` — it enforces the
+data rules, the layout invariants, AND band legality (no bunts at Rookie, dropped third strike
+Majors-only, `leadoff` illegal everywhere in scope). New scenarios must pass all three; a
+scenario that reads fine can still be visually ambiguous on the field. `ballZone` and `breaks`
+are rejected until the renderer session lands them.
 
 ## Device priority
 iPad first, then phone, then desktop. Test touch targets at iPad size.
