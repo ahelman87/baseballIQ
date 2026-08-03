@@ -444,10 +444,36 @@ const $=s=>document.querySelector(s);
 const el=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
 const OPTC=["#3ba7ff","#ffc24a","#ff5fa8"];
 
-function anchorFor(key,you){
+/* ballZone: ball location relative to the player, facing home. Direction is
+   computed, never hardcoded — y is DOWN in SVG, so "right" is (fy,-fx): for a
+   2B facing home that comes out toward FIRST base (dot +67.8), not second. */
+function zoneOffset(you,zone){
+  if(!zone||zone==="at")return [0,0];
+  const [hx,hy]=P.home,[x,y]=P[you];
+  let fx=hx-x,fy=hy-y;const L=Math.hypot(fx,fy)||1;fx/=L;fy/=L;
+  const D=50;
+  if(zone==="in")   return [ fx*D, fy*D];
+  if(zone==="deep") return [-fx*D,-fy*D];
+  if(zone==="right")return [ fy*D,-fx*D];
+  if(zone==="left") return [-fy*D, fx*D];
+  return [0,0];
+}
+/* Nearest bag to a fielder's HOME position — deliberately not the displaced
+   one, so ballZone can never move a tagbase target. */
+function nearestBase(you){
+  return ["first","second","third","home"].reduce((best,b)=>
+    Math.hypot(P[you][0]-P[b][0],P[you][1]-P[b][1])<Math.hypot(P[you][0]-P[best][0],P[you][1]-P[best][1])?b:best);
+}
+/* Anchors are SEMANTIC, not incidental:
+   - tagbase -> the nearest bag: the out happens at a base, so the marker,
+     the ✓ HERE, and the celebration belong on it.
+   - hold/tagrunner -> wherever the fielder currently IS (youAt): the action
+     is at the fielder, and ballZone may have moved him. */
+function anchorFor(key,you,youAt){
   const m={first:"first",second:"second",third:"third",home:"home",pitcher:"mound",
            cut2:"F4",cut6:"F6",cut3:"F3",cut5:"F5"};
-  if(key==="tagbase"||key==="hold"||key==="tagrunner") return P[you];
+  if(key==="tagbase") return P[nearestBase(you)];
+  if(key==="hold"||key==="tagrunner") return youAt||P[you];
   return m[key]?P[m[key]]:null;
 }
 /* two label sets: throwing plays vs "where do you run" plays */
@@ -573,16 +599,22 @@ function drawRunners(r){
     const g=el("g",{transform:`translate(${bases[i][0]},${bases[i][1]})`});
     g.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
     g.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
-    gR.appendChild(g);runnerEls.push({g,from:bases[i],to:nexts[i]});});
+    gR.appendChild(g);runnerEls.push({g,from:bases[i],to:nexts[i],idx:i});});
   const b=el("g",{transform:`translate(${P.home[0]},${P.home[1]})`,opacity:0});
   b.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
   b.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
   gR.appendChild(b);runnerEls.push({g:b,from:P.home,to:P.first,batter:true});
 }
+/* breaks?: [1st,2nd,3rd] — per-runner go/hold. When absent, behavior is
+   byte-identical to the single-style original (proven by driving both
+   implementations against identical mocks — see the renderer session).
+   The batter-runner is not in the array and always takes the global style. */
 function moveRunners(k,style){
+  const br=G.cur&&G.cur.breaks;
   runnerEls.forEach(r=>{
-    let f=style==="hold"?Math.sin(k*Math.PI)*.13:k*(r.batter?.62:.66);
-    if(r.batter&&style==="hold")f=k*.3;
+    const st=(!r.batter&&br)?(br[r.idx]?"go":"hold"):style;
+    let f=st==="hold"?Math.sin(k*Math.PI)*.13:k*(r.batter?.62:.66);
+    if(r.batter&&st==="hold")f=k*.3;
     const x=r.from[0]+(r.to[0]-r.from[0])*f,y=r.from[1]+(r.to[1]-r.from[1])*f;
     r.g.setAttribute("transform",`translate(${x.toFixed(1)},${y.toFixed(1)})`);
     if(r.batter)r.g.setAttribute("opacity",Math.min(1,k*4).toFixed(2));});
@@ -596,9 +628,12 @@ const BADGEF={F1:[0,44],F2:[56,14],F3:[30,-29],F4:[26,-34],F5:[-30,-29],
 function drawTargets(opts,s,onPick){
   gT.textContent="";
   opts.forEach((k,i)=>{
-    const a=anchorFor(k,s.you);if(!a)return;
+    const a=anchorFor(k,s.you,G.youAt);if(!a)return;
     const col=OPTC[i%3];
-    const off=(k==="tagbase"||k==="hold"||k==="tagrunner")?BADGEF[s.you]:(BADGE[k]||[0,42]);
+    /* tagbase sits on a bag, so it takes that bag's hand-placed BADGE offset;
+       hold/tagrunner ride the fielder and keep his BADGEF offset. */
+    const off=k==="tagbase"?(BADGE[nearestBase(s.you)]||[0,42]):
+      (k==="hold"||k==="tagrunner")?BADGEF[s.you]:(BADGE[k]||[0,42]);
     const bx=a[0]+off[0],by=a[1]+off[1];
     const g=el("g",{class:"hit-tgt"});
     const dash=s.mode==="go"?{"stroke-dasharray":"10 7"}:{};  /* dashed = run here, solid = throw here */
@@ -678,11 +713,15 @@ function flyBall(from,to,dur,arc,done,runStyle){
 function slideYou(to,dur,done){
   const g=gF.querySelector("#youF");
   if(!g){done&&done();return;}
-  const f=P[G.cur.you],t0=performance.now();
+  /* Start from wherever the fielder currently stands (ballZone may have moved
+     him), and keep G.youAt honest — it is the one source of truth for the
+     fielder's position, updated by whatever moves him. */
+  const m=(g.getAttribute("transform")||"").match(/translate\(([-\d.]+),([-\d.]+)\)/);
+  const f=m?[+m[1],+m[2]]:P[G.cur.you],t0=performance.now();
   (function frame(now){
     const k=Math.min(1,(now-t0)/(dur*1000));
     g.setAttribute("transform",`translate(${(f[0]+(to[0]-f[0])*k).toFixed(1)},${(f[1]+(to[1]-f[1])*k).toFixed(1)})`);
-    if(k<1)requestAnimationFrame(frame);else done&&done();
+    if(k<1)requestAnimationFrame(frame);else{G.youAt=to;done&&done();}
   })(t0);
 }
 let last=performance.now();
@@ -692,7 +731,8 @@ let last=performance.now();
 // TEMPORARY: Rookie has only 6 scenarios post-migration and repeats ~2x per game.
 // Flip back to "Rookie" once it reaches ~12. See Addendum B §B5.
 const G={band:"Minors",target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:0,best:0,
-  pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99,pos:[]};
+  pts:0,right:0,played:0,limit:18,byTag:{},cur:null,answered:false,tStart:0,tRaf:0,ticked:99,pos:[],
+  youAt:null,ballAt:null};  /* single source of truth for fielder/ball position, per play */
 /* Clock allowances SHIFT down a band — an 8U player needs more time than the
    old ages-8-to-10 Rookie allowance, not the same. */
 const LIMITS={Rookie:26,Minors:22,Majors:18};
@@ -764,6 +804,7 @@ const stopClock=()=>{G.answered=true;cancelAnimationFrame(G.tRaf);};
 function nextPlay(){
   const s=G.deck[G.i%G.deck.length];G.i++;G.cur=s;G.answered=false;
   G.pos.push(POSNAME[s.you]);  /* B6 rotation: surfaced on the results screen */
+  G.youAt=P[s.you];G.ballAt=null;  /* reset position state each play */
   clearTargets();clearTrail();gFx.textContent="";
   $("#coach").classList.remove("on");$("#opts").classList.remove("locked");
   $("#callout").classList.remove("show","good","bad");
@@ -786,9 +827,18 @@ function nextPlay(){
     $("#setup").classList.remove("on");
     setTimeout(()=>{
       SFX.crack();
-      const dest=P[s.ballTo||s.you];  /* A1.3: "go" plays hit the ball AWAY from you */
+      /* Where the ball lands: another fielder (ballTo), offset from the player
+         (ballZone), or right at the player. G.ballAt is the one source of
+         truth for the ball's position from here on. */
+      const off=zoneOffset(s.you,s.ballZone);
+      const dest=s.ballTo?P[s.ballTo]:[P[s.you][0]+off[0],P[s.you][1]+off[1]];
+      G.ballAt=dest;
       const cfg={ground:{dur:.72,arc:14},bunt:{dur:.55,arc:6},line:{dur:.6,arc:26},
                  fly:{dur:1.15,arc:210},pop:{dur:1.1,arc:180}}[s.hit]||{dur:.8,arc:20};
+      if(!s.ballTo&&(off[0]||off[1])){
+        G.youAt=dest;                    /* anchor to the destination, not the animation */
+        slideYou(dest,cfg.dur);          /* fielder moves to meet the ball, same clock as the flight */
+      }
       const style=(s.hit==="fly"||s.hit==="pop")?"hold":"go";
       if(s.hit==="ground"||s.hit==="bunt")burst(P.home[0],P.home[1]-6,{n:7,color:"#c98a5c",spd:120,life:.4,size:3.5,grav:400});
       flyBall(P.home,dest,cfg.dur,cfg.arc,()=>{
@@ -830,7 +880,7 @@ function answer(key){
     if(b.dataset.k===s.ans){b.classList.add("right");mk.textContent="✓";}
     else if(b.dataset.k===key){b.classList.add("wrong");mk.textContent="✗";}
   });
-  const from=P[s.ballTo||s.you],to=anchorFor(s.ans,s.you)||from;  /* throws come from where the ball IS */
+  const from=G.ballAt||P[s.you],to=anchorFor(s.ans,s.you,G.youAt)||from;  /* throws come from where the ball IS */
   const co=$("#callout"),big=co.querySelector(".big"),small=co.querySelector(".small");
 
   if(ok){
@@ -854,7 +904,13 @@ function answer(key){
     };
     if(isThrow){SFX.whoosh();flyBall(from,to,.42,Math.min(90,dist(from,to)/4),fire);}
     else if(s.mode==="go"){SFX.whoosh();slideYou(to,.5,fire);}  /* the ball stays put — YOU run */
-    else{burst(P[s.you][0],P[s.you][1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}  /* dust = the FIELDER's feet, never ballTo */
+    else if(s.ans==="tagbase"){
+      /* "Step on the bag" means the fielder WALKS to it — dust where the ball
+         was fielded, then carry it to the base the marker now sits on. */
+      burst(G.youAt[0],G.youAt[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});
+      slideYou(to,.4,fire);
+    }
+    else{burst(G.youAt[0],G.youAt[1],{n:10,color:"#e6cba8",spd:120,life:.5,size:4,grav:400});fire();}  /* dust = the FIELDER's feet, wherever he stands */
   } else {
     G.streak=0;G.runs++;SFX.bad();
     big.textContent=key===null?"TOO SLOW":"SAFE!";
@@ -873,7 +929,7 @@ function answer(key){
         markRight(to,s);
       } else if(s.mode==="go"){
         /* replay the RUN, not a throw: guide from the player, slide the player, ball stays put */
-        const you=P[s.you];
+        const you=G.youAt||P[s.you];
         const gd=el("line",{x1:you[0],y1:you[1],x2:to[0],y2:to[1],stroke:"#3ee07f",
           "stroke-width":6,"stroke-dasharray":"14 10",opacity:.9});
         gFx.appendChild(gd);

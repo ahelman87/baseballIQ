@@ -25,17 +25,19 @@ function slice(startMarker, endMarker) {
   return html.slice(i, j);
 }
 
-let P, anchorFor, label, BADGE, BADGEF, BANK;
+let P, anchorFor, label, BADGE, BADGEF, BANK, zoneOffset, nearestBase;
 try {
   /* Geometry still comes from index.html — its single source of truth. */
   const src = [
     slice("const P = {", "const POS"),
+    slice("function zoneOffset(", "/* Nearest bag"),
+    slice("function nearestBase(", "/* Anchors are SEMANTIC"),
     slice("function anchorFor(", "/* two label sets"),
     slice("const L_THROW=", "/* spoken version"),          // L_THROW, L_GO, label
     slice("const BADGE=", "function drawTargets"),         // BADGE + BADGEF
-    "return { P, anchorFor, label, BADGE, BADGEF };",
+    "return { P, anchorFor, label, BADGE, BADGEF, zoneOffset, nearestBase };",
   ].join("\n");
-  ({ P, anchorFor, label, BADGE, BADGEF } = new Function(src)());
+  ({ P, anchorFor, label, BADGE, BADGEF, zoneOffset, nearestBase } = new Function(src)());
   /* Scenarios come from the JSON — the file authors actually edit. */
   BANK = JSON.parse(readFileSync(join(root, "content/scenarios.json"), "utf8")).scenarios;
   if (!Array.isArray(BANK) || !BANK.length) throw new Error("scenarios.json has no scenarios array");
@@ -58,9 +60,7 @@ const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
    13 means no pickoffs and no balks anywhere in scope. */
 const BAND_ORDER = ["Rookie", "Minors", "Majors"];
 const RULE_MIN = { bunt: "Minors", infieldFly: "Minors", dropped3rd: "Majors" };
-/* Next session's renderer fields — a silently ignored field is worse than a
-   missing one, so their presence is an error until the engine honors them. */
-const NOT_YET = ["ballZone", "breaks"];
+const ZONES = ["at", "left", "right", "in", "deep"];
 
 const errors = [], warns = [];
 const err = m => errors.push(m);
@@ -75,7 +75,26 @@ BANK.forEach((s, idx) => {
   const bi = BAND_ORDER.indexOf(s.band);
   if (bi < 0) err(`${id} band "${s.band}" is not one of ${BAND_ORDER.join("/")}`);
   if ("d" in s) err(`${id} still carries the legacy numeric "d" — migration incomplete`);
-  for (const f of NOT_YET) if (f in s) err(`${id} has "${f}" — the engine cannot honor it yet (next session)`);
+  if (s.ballZone !== undefined && !ZONES.includes(s.ballZone))
+    err(`${id} ballZone "${s.ballZone}" is not one of ${ZONES.join("/")}`);
+  if (s.breaks !== undefined) {
+    if (!Array.isArray(s.breaks) || s.breaks.length !== 3 || s.breaks.some(b => typeof b !== "boolean"))
+      err(`${id} breaks must be exactly [bool,bool,bool] parallel to r`);
+    else {
+      s.breaks.forEach((b, bi) => {
+        if (b && !s.r[bi]) err(`${id} breaks[${bi}] true but base ${bi + 1} is empty — phantom runner`);
+      });
+      if (s.hit === "ground" || s.hit === "bunt") {
+        /* Forced runners have no choice — but a squeeze or freeze play may be a
+           legitimate exception, so this is a warning, not an error. */
+        const forced = [s.r[0], s.r[0] && s.r[1], s.r[0] && s.r[1] && s.r[2]];
+        forced.forEach((f, fi) => {
+          if (f && s.r[fi] && s.breaks[fi] === false)
+            warn(`${id} forced runner on base ${fi + 1} has breaks:false on a ${s.hit} — intended?`);
+        });
+      }
+    }
+  }
   if (s.ruleNote !== undefined) {
     if (s.ruleNote === "leadoff") err(`${id} ruleNote "leadoff" — no leadoffs below 13, so nothing in scope may carry it`);
     else if (!(s.ruleNote in RULE_MIN)) err(`${id} unknown ruleNote "${s.ruleNote}"`);
@@ -101,34 +120,46 @@ BANK.forEach((s, idx) => {
 
   /* ── layout invariants ──
      Geometry is independent of the runtime option shuffle: order only recolors
-     and renumbers; anchors and badge offsets depend on the key and s.you alone. */
-  const marks = s.opts.map(k => {
-    const a = anchorFor(k, s.you);
-    if (!a) { err(`${id} option "${k}" produces NO field marker — breaks number-matching`); return null; }
-    const off = SELF.has(k) ? BADGEF[s.you] : (BADGE[k] || [0, 42]);
-    return { k, ring: a, badge: [a[0] + off[0], a[1] + off[1]] };
-  }).filter(Boolean);
+     and renumbers. With ballZone the fielder ends the play displaced ~50px, so
+     every check runs against BOTH positions — a badge that clears the home
+     position may collide with the displaced one, and hold/tagrunner anchors
+     MOVE with the fielder. */
+  const zoff = zoneOffset(s.you, s.ballZone);
+  const variants = [["home", P[s.you]]];
+  if (zoff[0] || zoff[1]) variants.push(["displaced", [P[s.you][0] + zoff[0], P[s.you][1] + zoff[1]]]);
 
-  for (const m of marks) {
-    for (const [fk, fv] of FIELDERS) {
-      const d = dist(m.badge, fv);
-      if (d < 34) err(`${id} badge(${m.k}) ↔ fielder ${fk} = ${d.toFixed(1)} (min 34)`);
+  for (const [vname, youAt] of variants) {
+    const v = variants.length > 1 ? ` [${vname}]` : "";
+    const marks = s.opts.map(k => {
+      const a = anchorFor(k, s.you, youAt);
+      if (!a) { if (vname === "home") err(`${id} option "${k}" produces NO field marker — breaks number-matching`); return null; }
+      const off = k === "tagbase" ? (BADGE[nearestBase(s.you)] || [0, 42])
+        : SELF.has(k) ? BADGEF[s.you] : (BADGE[k] || [0, 42]);
+      return { k, ring: a, badge: [a[0] + off[0], a[1] + off[1]] };
+    }).filter(Boolean);
+
+    for (const m of marks) {
+      for (const [fk, fv] of FIELDERS) {
+        const fpos = fk === s.you ? youAt : fv;   // YOUR fielder stands at the variant position
+        const d = dist(m.badge, fpos);
+        if (d < 34) err(`${id}${v} badge(${m.k}) ↔ fielder ${fk} = ${d.toFixed(1)} (min 34)`);
+      }
+      for (const c of CHALK) {
+        const d = dist(m.badge, c);
+        if (d < 36) err(`${id}${v} badge(${m.k}) ↔ chalk label [${c}] = ${d.toFixed(1)} (min 36)`);
+      }
+      const [bx, by] = m.badge;
+      if (bx < 58 || bx > 942 || by < 48 || by > 762) err(`${id}${v} badge(${m.k}) out of bounds at [${bx},${by}]`);
     }
-    for (const c of CHALK) {
-      const d = dist(m.badge, c);
-      if (d < 36) err(`${id} badge(${m.k}) ↔ chalk label [${c}] = ${d.toFixed(1)} (min 36)`);
+    for (let i = 0; i < marks.length; i++) for (let j = i + 1; j < marks.length; j++) {
+      const a = marks[i], b = marks[j];
+      const rr = dist(a.ring, b.ring), bb = dist(a.badge, b.badge);
+      const br1 = dist(a.badge, b.ring), br2 = dist(b.badge, a.ring);
+      if (rr < 60) err(`${id}${v} ring(${a.k}) ↔ ring(${b.k}) = ${rr.toFixed(1)} (min 60) — visually merged targets`);
+      if (bb < 40) err(`${id}${v} badge(${a.k}) ↔ badge(${b.k}) = ${bb.toFixed(1)} (min 40)`);
+      if (br1 < 48) err(`${id}${v} badge(${a.k}) ↔ ring(${b.k}) = ${br1.toFixed(1)} (min 48)`);
+      if (br2 < 48) err(`${id}${v} badge(${b.k}) ↔ ring(${a.k}) = ${br2.toFixed(1)} (min 48)`);
     }
-    const [bx, by] = m.badge;
-    if (bx < 58 || bx > 942 || by < 48 || by > 762) err(`${id} badge(${m.k}) out of bounds at [${bx},${by}]`);
-  }
-  for (let i = 0; i < marks.length; i++) for (let j = i + 1; j < marks.length; j++) {
-    const a = marks[i], b = marks[j];
-    const rr = dist(a.ring, b.ring), bb = dist(a.badge, b.badge);
-    const br1 = dist(a.badge, b.ring), br2 = dist(b.badge, a.ring);
-    if (rr < 60) err(`${id} ring(${a.k}) ↔ ring(${b.k}) = ${rr.toFixed(1)} (min 60) — visually merged targets`);
-    if (bb < 40) err(`${id} badge(${a.k}) ↔ badge(${b.k}) = ${bb.toFixed(1)} (min 40)`);
-    if (br1 < 48) err(`${id} badge(${a.k}) ↔ ring(${b.k}) = ${br1.toFixed(1)} (min 48)`);
-    if (br2 < 48) err(`${id} badge(${b.k}) ↔ ring(${a.k}) = ${br2.toFixed(1)} (min 48)`);
   }
 });
 

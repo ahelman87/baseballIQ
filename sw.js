@@ -44,7 +44,11 @@ self.addEventListener("fetch", e => {
        cache already answered this navigation — refresh the cached shell.
        Registered via waitUntil synchronously so the worker stays alive for it.
        Both "/" and "/index.html" store under "/" so either entry URL recovers. */
-    const net = fetch(req);
+    /* cache:"no-cache" forces conditional revalidation (304s still honored),
+       so the one-reload update guarantee is enforced from code instead of
+       resting on the server's Cache-Control header. req.url, not req: an init
+       over a mode:"navigate" Request throws in Chrome. */
+    const net = fetch(req.url, { cache: "no-cache" });
     e.waitUntil(
       net.then(res => {
         if (!res.ok) return;                 // never cache an error page as the shell
@@ -71,7 +75,7 @@ self.addEventListener("fetch", e => {
      branch must run before the SHELL check, which also lists this path (for
      install-time precache). */
   if (url.pathname === "/content/scenarios.json") {
-    const net = fetch(req);
+    const net = fetch(req.url, { cache: "no-cache" });   // same revalidation guarantee as navigations
     e.waitUntil(
       net.then(res => {
         if (!res.ok) return;

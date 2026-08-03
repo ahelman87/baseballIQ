@@ -287,7 +287,8 @@
    "ans": "first",
    "big": "Go where the ball takes you.",
    "why": "Second base is behind you now. First base is a force out too. Throw the way you are already moving.",
-   "pairId": "force-choice-2b"
+   "pairId": "force-choice-2b",
+   "ballZone": "right"
   },
   {
    "band": "Majors",
@@ -701,7 +702,12 @@
    "ans": "home",
    "big": "He ran. Get him at the plate.",
    "why": "He can't stop once he goes. You have the ball and he doesn't. Throw home and take the run away.",
-   "pairId": "r3-read"
+   "pairId": "r3-read",
+   "breaks": [
+    true,
+    false,
+    true
+   ]
   },
   {
    "band": "Majors",
@@ -724,7 +730,12 @@
    "ans": "second",
    "big": "Second base is empty, so third is not a force.",
    "why": "Stepping on third does nothing — he does not have to run. The runner on first DOES have to run. Throw to second.",
-   "pairId": "r3-read"
+   "pairId": "r3-read",
+   "breaks": [
+    true,
+    false,
+    false
+   ]
   },
   {
    "band": "Majors",
