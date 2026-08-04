@@ -449,7 +449,12 @@
    ],
    "ans": "first",
    "big": "He left early. Throw behind him.",
-   "why": "He has to go back and touch first base. Throw to first before he gets there and he is out too."
+   "why": "He has to go back and touch first base. Throw to first before he gets there and he is out too.",
+   "breaks": [
+    true,
+    false,
+    false
+   ]
   },
   {
    "id": "p-bunt-first",
@@ -575,30 +580,6 @@
    "why": "Run behind the catcher and stand way back. If the throw gets past him, you stop it and nobody moves up."
   },
   {
-   "id": "ss-rundown-second",
-   "band": "Minors",
-   "tag": "Rundowns",
-   "you": "F6",
-   "hit": "ground",
-   "r": [
-    0,
-    1,
-    0
-   ],
-   "outs": 1,
-   "arrows": false,
-   "sit": "Runner stuck between 2nd and 3rd",
-   "ask": "You have the ball. The runner is caught in the middle.",
-   "opts": [
-    "second",
-    "third",
-    "tagrunner"
-   ],
-   "ans": "second",
-   "big": "Run him back the way he came.",
-   "why": "Chase him toward second base, not third. Then make one hard throw. The worst thing that happens is he ends up where he started."
-  },
-  {
    "id": "ss-infield-fly-hold",
    "band": "Minors",
    "tag": "Infield fly",
@@ -621,7 +602,8 @@
    "ans": "hold",
    "big": "Batter's already out. Just catch it.",
    "why": "The umpire called him out so you can't drop it on purpose. Now nobody has to run. Catch the ball and hold it.",
-   "ruleNote": "infieldFly"
+   "ruleNote": "infieldFly",
+   "batterRuns": false
   },
   {
    "id": "cf-tagup-third",
@@ -1749,7 +1731,12 @@
    ],
    "ans": "second",
    "big": "He forgot to go back. Make him pay.",
-   "why": "After a catch, the runner has to touch his base again. He is too far away. Throw to second before he can get back."
+   "why": "After a catch, the runner has to touch his base again. He is too far away. Throw to second before he can get back.",
+   "breaks": [
+    false,
+    true,
+    false
+   ]
   },
   {
    "id": "lf-relay-cut6",
@@ -1870,54 +1857,6 @@
    "ruleNote": "bunt"
   },
   {
-   "id": "1b-rundown-first",
-   "band": "Minors",
-   "tag": "Rundowns",
-   "you": "F3",
-   "hit": "ground",
-   "r": [
-    1,
-    0,
-    0
-   ],
-   "outs": 1,
-   "sit": "Runner stuck between 1st and 2nd",
-   "ask": "The runner is trapped between first and second. You have the ball.",
-   "opts": [
-    "first",
-    "second",
-    "third"
-   ],
-   "ans": "first",
-   "big": "Chase him back, not forward.",
-   "why": "Run right at him and push him back toward first base. One hard throw to the bag he came from. Never chase him toward second.",
-   "arrows": false
-  },
-  {
-   "id": "c-rundown-third",
-   "band": "Minors",
-   "tag": "Rundowns",
-   "you": "F2",
-   "hit": "ground",
-   "r": [
-    0,
-    0,
-    1
-   ],
-   "outs": 1,
-   "sit": "Runner stuck between 3rd and home",
-   "ask": "The runner is trapped between third and home. You have the ball.",
-   "opts": [
-    "third",
-    "home",
-    "first"
-   ],
-   "ans": "third",
-   "big": "Push him away from the plate.",
-   "why": "Run hard at him and make him turn back toward third. Then one quick throw to third. If he gets back safe, at least he did not score.",
-   "arrows": false
-  },
-  {
    "id": "p-backup-third",
    "band": "Minors",
    "tag": "Where to run",
@@ -1974,7 +1913,8 @@
    "labels": {
     "second": "Run behind 2nd base"
    },
-   "pairId": "who-covers-the-steal"
+   "pairId": "who-covers-the-steal",
+   "batterRuns": false
   },
   {
    "id": "ss-steal-cover-second",
@@ -2000,7 +1940,8 @@
    "why": "Beat the runner to second and give the catcher a target. Catch the throw in front of the bag and put the tag down.",
    "mode": "go",
    "arrows": false,
-   "pairId": "who-covers-the-steal"
+   "pairId": "who-covers-the-steal",
+   "batterRuns": false
   },
   {
    "id": "cf-steal-backup-second",
@@ -2029,7 +1970,8 @@
    "arrows": false,
    "labels": {
     "second": "Run behind 2nd base"
-   }
+   },
+   "batterRuns": false
   },
   {
    "id": "2b-infield-fly-hold",
@@ -2054,7 +1996,8 @@
    "big": "The call already made the out.",
    "why": "The umpire's call means the batter is out no matter what. The runners can stay put. Catch it, hold it, and relax.",
    "ruleNote": "infieldFly",
-   "arrows": false
+   "arrows": false,
+   "batterRuns": false
   },
   {
    "id": "p-infield-fly-hold",
@@ -2079,7 +2022,8 @@
    "big": "Your easiest out. Don't rush it.",
    "why": "The batter is already out on the call, and nobody has to run. Camp under it, make the catch, and keep the ball.",
    "ruleNote": "infieldFly",
-   "arrows": false
+   "arrows": false,
+   "batterRuns": false
   },
   {
    "id": "c-r3-2out-first",
@@ -2305,83 +2249,6 @@
    "ruleNote": "bunt"
   },
   {
-   "id": "ss-rundown-lead-second",
-   "band": "Majors",
-   "tag": "Rundowns",
-   "you": "F6",
-   "hit": "ground",
-   "r": [
-    1,
-    1,
-    0
-   ],
-   "outs": 1,
-   "sit": "Runner stuck between 2nd and 3rd",
-   "ask": "The lead runner is trapped past second. The runner behind him is sneaking up. You have the ball.",
-   "opts": [
-    "second",
-    "third",
-    "tagrunner"
-   ],
-   "ans": "second",
-   "big": "Run the lead man back. Fast.",
-   "why": "Push him back toward second before the other runner gets brave. One throw, one tag. A slow rundown lets BOTH runners move up.",
-   "arrows": false
-  },
-  {
-   "id": "c-rundown-trail-third",
-   "band": "Majors",
-   "tag": "Rundowns",
-   "you": "F2",
-   "hit": "ground",
-   "r": [
-    0,
-    1,
-    1
-   ],
-   "outs": 1,
-   "sit": "Runner stuck between 3rd and home",
-   "ask": "He is trapped between third and home, and the runner from second is creeping toward third.",
-   "opts": [
-    "third",
-    "home",
-    "first"
-   ],
-   "ans": "third",
-   "big": "End it quick — his buddy is coming.",
-   "why": "Chase him back toward third with the ball up. One throw ends it. Take too long and the trailing runner steals a free base.",
-   "arrows": false
-  },
-  {
-   "id": "1b-frozen-first",
-   "band": "Majors",
-   "tag": "Rundowns",
-   "you": "F3",
-   "hit": "line",
-   "r": [
-    1,
-    0,
-    0
-   ],
-   "outs": 0,
-   "sit": "Runner on 1st",
-   "ask": "You snag the ball and he is caught off first, frozen.",
-   "opts": [
-    "first",
-    "second",
-    "home"
-   ],
-   "ans": "first",
-   "big": "Frozen means he's already yours.",
-   "why": "Do not wait for him to pick. Walk right at him, and the second he leans toward second, throw to first behind him. The bag he left is the out.",
-   "breaks": [
-    false,
-    false,
-    false
-   ],
-   "arrows": false
-  },
-  {
    "id": "1b-depth-in-home",
    "band": "Majors",
    "tag": "Infield in or back",
@@ -2495,7 +2362,8 @@
    "pairId": "drop-or-hold-if",
    "labels": {
     "tagrunner": "Tag him as he goes by"
-   }
+   },
+   "batterRuns": false
   },
   {
    "id": "2b-if-drop-hold",
@@ -2526,7 +2394,8 @@
    ],
    "ruleNote": "infieldFly",
    "arrows": false,
-   "pairId": "drop-or-hold-if"
+   "pairId": "drop-or-hold-if",
+   "batterRuns": false
   },
   {
    "id": "c-r1-dropped3rd-hold",
@@ -2556,7 +2425,8 @@
     false
    ],
    "ruleNote": "dropped3rd",
-   "pairId": "can-he-run-3rd-strike"
+   "pairId": "can-he-run-3rd-strike",
+   "batterRuns": false
   },
   {
    "id": "1b-dropped3rd-cover-first",

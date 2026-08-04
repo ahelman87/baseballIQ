@@ -128,6 +128,24 @@ BANK.forEach((s, idx) => {
   }
   if (s.hit === "bunt" && s.ruleNote !== "bunt")
     err(`${id} hit:"bunt" without ruleNote:"bunt" — the band gate cannot see it`);
+  /* ── batterRuns: no-batter plays must not draw a phantom batter ── */
+  if (s.batterRuns !== undefined && typeof s.batterRuns !== "boolean")
+    err(`${id} batterRuns must be boolean when present`);
+  if (s.ruleNote === "infieldFly" && s.batterRuns !== false)
+    warn(`${id} infield fly without batterRuns:false — the rule's premise is that the batter is out`);
+  if (s.ruleNote === "dropped3rd" && s.r[0] && s.outs < 2 && s.batterRuns !== false)
+    warn(`${id} dropped third strike with first occupied and under two outs — the batter is out automatically, set batterRuns:false`);
+  /* ── picture vs copy: a runner described OFF a base needs breaks to draw it.
+     Runner-scoped on purpose: "the ball pulls YOU way off first" is about the
+     fielder and must not trip this. ── */
+  const offBaseTxt = (s.ask + " " + s.sit);
+  /* "takes off for home" is running, not off-base — the lookbehind keeps
+     departure verbs from tripping the positional check. */
+  const runnerOffBase =
+    /runner[^.?!]*\b(near|(?<!takes\s)(?<!take\s)(?<!took\s)off|between|past|halfway)\b[^.?!]*\b(first|second|third|home)\b/i.test(offBaseTxt) ||
+    /wandered|leaning|strayed|caught off|stuck between/i.test(offBaseTxt);
+  if (runnerOffBase && !s.breaks)
+    warn(`${id} describes a runner off a base but has no breaks — the picture will show him ON it (or nowhere)`);
   /* pairId: a string, or an array when one scenario belongs to several pairs
      (R05 sits in both lead-moves-ss and same-play-two-jobs). */
   if (s.pairId !== undefined) {

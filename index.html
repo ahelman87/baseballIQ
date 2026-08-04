@@ -604,6 +604,10 @@ function drawRunners(r){
     g.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
     g.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
     gR.appendChild(g);runnerEls.push({g,from:bases[i],to:nexts[i],idx:i});});
+  /* batterRuns:false — some plays have NO batter-runner (steals, infield fly,
+     dropped third strike with first occupied): drawing one puts a phantom red
+     dot on screen running to a base nobody is running to. Default true. */
+  if(G.cur&&G.cur.batterRuns===false)return;
   const b=el("g",{transform:`translate(${P.home[0]},${P.home[1]})`,opacity:0});
   b.appendChild(el("circle",{r:20,fill:"#d4302f","fill-opacity":".25"}));
   b.appendChild(el("circle",{r:13,fill:"#e8433f",stroke:"#7d1b19","stroke-width":2}));
@@ -996,7 +1000,9 @@ function reveal(ok){
     $("#coachTxt").textContent=s.why;
     $("#coach").classList.add("on");
     $("#btnNext").textContent=(G.outs>=G.target)?"See how you did":"Next Play";
-    if(s.arrows!==false&&(s.hit==="ground"||s.hit==="bunt")) forceArrows(s);
+    /* No batter means no force chain at all — the overlay would draw arrows
+       for forces that don't exist (found on the dropped-K batter-out play). */
+    if(s.arrows!==false&&s.batterRuns!==false&&(s.hit==="ground"||s.hit==="bunt")) forceArrows(s);
   },ok?750:450);
 }
 $("#btnNext").addEventListener("click",()=>{
