@@ -175,6 +175,31 @@ BANK.forEach((s, idx) => {
   }
   if (s.ballTo && !P[s.ballTo]) err(`${id} ballTo "${s.ballTo}" is not a fielder position`);
 
+  /* ── distractor quality: the fallback branch must be learnable ──
+     On any ground/bunt play with a live batter, some force-reachable out is
+     always a real play; a scenario offering none of them can't test the
+     choice it claims to teach (found by playtest: M03 offered only the tag,
+     the taught-wrong bag, and an implausible base — solvable by elimination,
+     with the "otherwise take the sure out" branch unlearnable). WARN, not
+     error: a deliberate pure-tag drill could legitimately trip it. */
+  if ((s.hit === "ground" || s.hit === "bunt") && s.mode !== "go"
+      && s.tag !== "Rundowns" && !s.ruleNote) {
+    const f = { first: true, second: !!s.r[0], third: !!(s.r[0] && s.r[1]), home: !!(s.r[0] && s.r[1] && s.r[2]) };
+    const sure = s.opts.some(k =>
+      (["first", "second", "third", "home"].includes(k) && f[k]) ||
+      (k === "tagbase" && f[nearestBase(s.you)]));
+    if (!sure) warn(`${id} offers no force-reachable out on a live-batter ${s.hit} — the sure-out branch can't be learned`);
+
+    /* ── picture vs copy: hold-language with default all-advance motion ──
+       Without breaks, the renderer advances EVERY runner on a ground ball.
+       If the coaching note says a runner can stay, the animation contradicts
+       the copy — right as text, wrong as an experience. */
+    const holdLang = /(does not|doesn't|don't) have to (run|move)|can stay|stays? put|no force|not a force|can't force|cannot force/i;
+    const unforcedOccupied = (s.r[0] && false) || (s.r[1] && !(s.r[0])) || (s.r[2] && !(s.r[0] && s.r[1]));
+    if (!s.breaks && unforcedOccupied && (holdLang.test(s.why) || holdLang.test(s.big)))
+      warn(`${id} note says a runner can stay, but with no breaks the picture animates him advancing — add breaks`);
+  }
+
   /* ── layout invariants ──
      Geometry is independent of the runtime option shuffle: order only recolors
      and renumbers. With ballZone the fielder ends the play displaced ~50px, so

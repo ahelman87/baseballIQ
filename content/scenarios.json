@@ -159,7 +159,12 @@
    ],
    "ans": "tagbase",
    "big": "Nobody on first? He can stay put.",
-   "why": "The runner on second does not have to run. You can't force him out. Step on first and take the easy out."
+   "why": "The runner on second does not have to run. You can't force him out. Step on first and take the easy out.",
+   "breaks": [
+    false,
+    false,
+    false
+   ]
   },
   {
    "id": "ss-catch-pitcher",
@@ -370,7 +375,12 @@
    ],
    "ans": "first",
    "big": "Look him back, then throw to first.",
-   "why": "He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first."
+   "why": "He does not have to run, so you can't force him out. Stare at him for one second so he stops. Then throw to first.",
+   "breaks": [
+    false,
+    false,
+    false
+   ]
   },
   {
    "id": "rf-tagup-home",
@@ -1425,11 +1435,11 @@
    "opts": [
     "tagrunner",
     "tagbase",
-    "third"
+    "first"
    ],
    "ans": "tagrunner",
    "big": "No force? You have to tag HIM.",
-   "why": "Nobody made him run, so there is no force. Stepping on a bag does nothing. Reach out and tag him as he goes by.",
+   "why": "He ran right into you — tag him. If he had gone by out of your reach, the play would be the sure out at first instead.",
    "breaks": [
     false,
     true,
@@ -1437,7 +1447,38 @@
    ],
    "labels": {
     "tagrunner": "Tag him as he goes by"
-   }
+   },
+   "pairId": "tag-or-sure-out-ss"
+  },
+  {
+   "id": "ss-hole-r2-runs-first",
+   "band": "Minors",
+   "tag": "Who has to run",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 2nd",
+   "ask": "Ground ball deep in the hole, far to your right. The runner takes off for third.",
+   "opts": [
+    "first",
+    "tagrunner",
+    "third"
+   ],
+   "ans": "first",
+   "big": "Out of reach? Take the sure out.",
+   "why": "He is too far away to tag, and no throw beats him to third from out there. The batter is the out you can still get. First base.",
+   "ballZone": "right",
+   "breaks": [
+    false,
+    true,
+    false
+   ],
+   "pairId": "tag-or-sure-out-ss"
   },
   {
    "id": "2b-r13-2out-bag",
