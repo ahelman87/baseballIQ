@@ -682,7 +682,8 @@
    "ans": "first",
    "big": "Dropped strike three? He can run.",
    "why": "If you drop strike three and first base is empty, the batter is allowed to run. Go get the ball and throw to first.",
-   "ruleNote": "dropped3rd"
+   "ruleNote": "dropped3rd",
+   "pairId": "can-he-run-3rd-strike"
   },
   {
    "id": "1b-pitcher-covers-first",
@@ -2038,6 +2039,533 @@
    "why": "The batter is already out on the call, and nobody has to run. Camp under it, make the catch, and keep the ball.",
    "ruleNote": "infieldFly",
    "arrows": false
+  },
+  {
+   "id": "c-r3-2out-first",
+   "band": "Majors",
+   "tag": "Counting outs",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 2,
+   "sit": "Runner on 3rd",
+   "ask": "The ball dribbles out in front of the plate. The runner breaks for home.",
+   "opts": [
+    "first",
+    "tagrunner",
+    "third"
+   ],
+   "ans": "first",
+   "big": "The count says take the batter.",
+   "why": "Chasing him is a race you might lose. With two outs, the out at first ends the inning, and then his run counts for nothing.",
+   "breaks": [
+    false,
+    false,
+    true
+   ]
+  },
+  {
+   "id": "rf-r2-2out-home",
+   "band": "Majors",
+   "tag": "Counting outs",
+   "you": "F9",
+   "hit": "line",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 2,
+   "sit": "Runner on 2nd",
+   "ask": "Base hit to you in right field. The runner is around third and heading home.",
+   "opts": [
+    "home",
+    "cut2",
+    "second"
+   ],
+   "ans": "home",
+   "big": "Two outs? Send it all the way.",
+   "why": "This run is the whole play — with two outs there is no double play to set up. Skip the cutoff man and let it fly home on one hop."
+  },
+  {
+   "id": "p-r3-holds-first",
+   "band": "Majors",
+   "tag": "Watching the runner",
+   "you": "F1",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 1,
+   "sit": "Runner on 3rd",
+   "ask": "The ball comes right back to you on the mound. The runner on third is not moving.",
+   "opts": [
+    "first",
+    "home",
+    "third"
+   ],
+   "ans": "first",
+   "big": "He froze? Take what he gave you.",
+   "why": "Look him back to third so he stays put. Then turn and get the sure out at first. He decided this play for you when he froze.",
+   "breaks": [
+    false,
+    false,
+    false
+   ]
+  },
+  {
+   "id": "lf-tagup-third",
+   "band": "Majors",
+   "tag": "Catches and tag ups",
+   "you": "F7",
+   "hit": "fly",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "Deep fly ball to you in left. You catch it, and he tags up for third.",
+   "opts": [
+    "third",
+    "second",
+    "home"
+   ],
+   "ans": "third",
+   "big": "Throw to where he's GOING.",
+   "why": "The catch is out one — now he is trying to take third. Second base is behind him and does not matter. One hop to third base."
+  },
+  {
+   "id": "lf-gap-relay-cut6",
+   "band": "Majors",
+   "tag": "Long throws",
+   "you": "F7",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "The ball splits the gap. The runner is around second and going for third.",
+   "opts": [
+    "cut6",
+    "third",
+    "home"
+   ],
+   "ans": "cut6",
+   "big": "Hit the cutoff, hard and low.",
+   "why": "From the gap, third base is too far to reach on a line. The shortstop is your cutoff — hit him chest high and let him finish it."
+  },
+  {
+   "id": "cf-wall-relay-cut6",
+   "band": "Majors",
+   "tag": "Long throws",
+   "you": "F8",
+   "hit": "fly",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "The ball bangs off the wall. The runner from second is coming all the way around.",
+   "opts": [
+    "cut6",
+    "home",
+    "second"
+   ],
+   "ans": "cut6",
+   "big": "The wall means you need two throws.",
+   "why": "No one scores a runner from the wall with one throw. Find the shortstop lined up in the middle. Your job is a hard strike to him, not a hero throw home."
+  },
+  {
+   "id": "3b-r1-dp-second",
+   "band": "Majors",
+   "tag": "Double plays",
+   "you": "F5",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "Ground ball right to you at third base.",
+   "opts": [
+    "second",
+    "first",
+    "third"
+   ],
+   "ans": "second",
+   "big": "Feed second and turn two.",
+   "why": "The runner from first has to run, so second base starts the double play. One out is fine. Two outs for one ground ball is better."
+  },
+  {
+   "id": "c-bunt-cover-third",
+   "band": "Majors",
+   "tag": "Where to run",
+   "you": "F2",
+   "hit": "bunt",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "The bunt rolls up the third base line. The third baseman charges it. Where do YOU go?",
+   "opts": [
+    "third",
+    "home",
+    "first"
+   ],
+   "ans": "third",
+   "big": "He left third. Fill it.",
+   "why": "When the third baseman charges, his bag is empty behind him — and a runner is headed there. Whoever is free has to fill it. That is you.",
+   "mode": "go",
+   "ballTo": "F5",
+   "arrows": false,
+   "ruleNote": "bunt"
+  },
+  {
+   "id": "p-bunt-sure-first",
+   "band": "Majors",
+   "tag": "Bunts",
+   "you": "F1",
+   "hit": "bunt",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "The bunt dies right in front of the mound. You field it clean.",
+   "opts": [
+    "first",
+    "third",
+    "second"
+   ],
+   "ans": "first",
+   "big": "Clean or not, first is certain.",
+   "why": "Third base is tempting, but that throw has to beat a runner with a head start. First base cannot be beaten. Take the certain out.",
+   "ballZone": "in",
+   "ruleNote": "bunt"
+  },
+  {
+   "id": "ss-rundown-lead-second",
+   "band": "Majors",
+   "tag": "Rundowns",
+   "you": "F6",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner stuck between 2nd and 3rd",
+   "ask": "The lead runner is trapped past second. The runner behind him is sneaking up. You have the ball.",
+   "opts": [
+    "second",
+    "third",
+    "tagrunner"
+   ],
+   "ans": "second",
+   "big": "Run the lead man back. Fast.",
+   "why": "Push him back toward second before the other runner gets brave. One throw, one tag. A slow rundown lets BOTH runners move up.",
+   "arrows": false
+  },
+  {
+   "id": "c-rundown-trail-third",
+   "band": "Majors",
+   "tag": "Rundowns",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    0,
+    1,
+    1
+   ],
+   "outs": 1,
+   "sit": "Runner stuck between 3rd and home",
+   "ask": "He is trapped between third and home, and the runner from second is creeping toward third.",
+   "opts": [
+    "third",
+    "home",
+    "first"
+   ],
+   "ans": "third",
+   "big": "End it quick — his buddy is coming.",
+   "why": "Chase him back toward third with the ball up. One throw ends it. Take too long and the trailing runner steals a free base.",
+   "arrows": false
+  },
+  {
+   "id": "1b-frozen-first",
+   "band": "Majors",
+   "tag": "Rundowns",
+   "you": "F3",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runner on 1st",
+   "ask": "You snag the ball and he is caught off first, frozen.",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "Frozen means he's already yours.",
+   "why": "Do not wait for him to pick. Walk right at him, and the second he leans toward second, throw to first behind him. The bag he left is the out.",
+   "breaks": [
+    false,
+    false,
+    false
+   ],
+   "arrows": false
+  },
+  {
+   "id": "1b-depth-in-home",
+   "band": "Majors",
+   "tag": "Infield in or back",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    1
+   ],
+   "outs": 0,
+   "sit": "Runner on 3rd",
+   "ask": "Ground ball right to you at first base.",
+   "opts": [
+    "home",
+    "first",
+    "second"
+   ],
+   "ans": "home",
+   "big": "You moved up for THIS throw.",
+   "why": "The whole infield stepped in to cut this run down at the plate. That was the deal. Fire it home and make the plan work.",
+   "extra": "Infield is in"
+  },
+  {
+   "id": "rf-r2-backup-second",
+   "band": "Majors",
+   "tag": "Where to run",
+   "you": "F9",
+   "hit": "line",
+   "r": [
+    0,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 2nd",
+   "ask": "Base hit to left. The throw is going home — and the batter is watching it. Where do YOU run?",
+   "opts": [
+    "second",
+    "first",
+    "home"
+   ],
+   "ans": "second",
+   "big": "The throw home opens second base.",
+   "why": "When the throw goes home, the batter will try to sneak into second. Get behind the bag. If nobody covers the sneak, the hit turns into a double.",
+   "mode": "go",
+   "ballTo": "F7",
+   "arrows": false,
+   "labels": {
+    "second": "Run behind 2nd base"
+   }
+  },
+  {
+   "id": "p-r1-backup-third",
+   "band": "Majors",
+   "tag": "Where to run",
+   "you": "F1",
+   "hit": "line",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Base hit to right field. The throw is going to third. Where do YOU run?",
+   "opts": [
+    "third",
+    "home",
+    "second"
+   ],
+   "ans": "third",
+   "big": "Chase the throw, not the ball.",
+   "why": "Your job after the pitch is to back up the base the throw is going to. That is third this time. Get deep behind the bag.",
+   "mode": "go",
+   "ballTo": "F9",
+   "arrows": false,
+   "labels": {
+    "third": "Run behind 3rd base"
+   }
+  },
+  {
+   "id": "ss-if-drop-tag",
+   "band": "Majors",
+   "tag": "Infield fly",
+   "you": "F6",
+   "hit": "pop",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "INFIELD FLY is called — and the ball pops out of your glove. The runner from second takes off for third.",
+   "opts": [
+    "tagrunner",
+    "tagbase",
+    "third"
+   ],
+   "ans": "tagrunner",
+   "big": "The drop changes nothing. Tag him.",
+   "why": "The batter was out the moment the umpire called it, drop or no drop. Nobody HAS to run, so there is no force. The bag means nothing — tag the runner.",
+   "breaks": [
+    false,
+    true,
+    false
+   ],
+   "ruleNote": "infieldFly",
+   "arrows": false,
+   "pairId": "drop-or-hold-if",
+   "labels": {
+    "tagrunner": "Tag him as he goes by"
+   }
+  },
+  {
+   "id": "2b-if-drop-hold",
+   "band": "Majors",
+   "tag": "Infield fly",
+   "you": "F4",
+   "hit": "pop",
+   "r": [
+    1,
+    1,
+    0
+   ],
+   "outs": 0,
+   "sit": "Runners on 1st and 2nd",
+   "ask": "INFIELD FLY is called. The ball drops in front of you, and both runners stay put.",
+   "opts": [
+    "hold",
+    "second",
+    "first"
+   ],
+   "ans": "hold",
+   "big": "Dropped or caught, it's over.",
+   "why": "The call already made the batter out. The runners are smart to stay. Pick it up, hold it, and let the play die.",
+   "breaks": [
+    false,
+    false,
+    false
+   ],
+   "ruleNote": "infieldFly",
+   "arrows": false,
+   "pairId": "drop-or-hold-if"
+  },
+  {
+   "id": "c-r1-dropped3rd-hold",
+   "band": "Majors",
+   "tag": "Tricky rules",
+   "you": "F2",
+   "hit": "ground",
+   "r": [
+    1,
+    0,
+    0
+   ],
+   "outs": 1,
+   "sit": "Runner on 1st",
+   "ask": "Strike three bounces off your glove — but first base is taken, and there is one out.",
+   "opts": [
+    "hold",
+    "first",
+    "second"
+   ],
+   "ans": "hold",
+   "big": "First is taken. He can't run.",
+   "why": "Strike three can only run when first base is open or there are two outs. Not now. He is out on the call — hold the ball and relax.",
+   "breaks": [
+    false,
+    false,
+    false
+   ],
+   "ruleNote": "dropped3rd",
+   "pairId": "can-he-run-3rd-strike"
+  },
+  {
+   "id": "1b-dropped3rd-cover-first",
+   "band": "Majors",
+   "tag": "Tricky rules",
+   "you": "F3",
+   "hit": "ground",
+   "r": [
+    0,
+    0,
+    0
+   ],
+   "outs": 2,
+   "sit": "Nobody on base",
+   "ask": "Strike three skips past the catcher, and the batter takes off. Where do YOU go?",
+   "opts": [
+    "first",
+    "second",
+    "home"
+   ],
+   "ans": "first",
+   "big": "The catcher needs a target. You.",
+   "why": "With two outs, strike three can always run. The catcher will grab it and fire — someone has to be standing on first. Go be there.",
+   "mode": "go",
+   "ballTo": "F2",
+   "arrows": false,
+   "ruleNote": "dropped3rd"
+  },
+  {
+   "id": "p-comebacker-home",
+   "band": "Majors",
+   "tag": "Who has to run",
+   "you": "F1",
+   "hit": "ground",
+   "r": [
+    1,
+    1,
+    1
+   ],
+   "outs": 1,
+   "sit": "Bases loaded",
+   "ask": "The ball comes right back to you, hard.",
+   "opts": [
+    "home",
+    "second",
+    "first"
+   ],
+   "ans": "home",
+   "big": "From here, home is a gift. Take it.",
+   "why": "A shortstop would start two from deep. You are five feet from a certain out at home. Where you stand picks the play — toss it to the catcher."
   }
  ]
 }

@@ -107,9 +107,11 @@ BANK.forEach((s, idx) => {
       s.breaks.forEach((b, bi) => {
         if (b && !s.r[bi]) err(`${id} breaks[${bi}] true but base ${bi + 1} is empty — phantom runner`);
       });
-      if (s.hit === "ground" || s.hit === "bunt") {
+      if ((s.hit === "ground" || s.hit === "bunt") && s.ruleNote !== "dropped3rd") {
         /* Forced runners have no choice — but a squeeze or freeze play may be a
-           legitimate exception, so this is a warning, not an error. */
+           legitimate exception, so this is a warning, not an error. Dropped third
+           strike is exempt outright: the batter is out on the call, so the force
+           calculation (which assumes a batter running) does not apply. */
         const forced = [s.r[0], s.r[0] && s.r[1], s.r[0] && s.r[1] && s.r[2]];
         forced.forEach((f, fi) => {
           if (f && s.r[fi] && s.breaks[fi] === false)
