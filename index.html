@@ -745,30 +745,57 @@ const G={band:"Rookie",target:9,useClock:false,deck:[],i:0,outs:0,runs:0,streak:
    old ages-8-to-10 Rookie allowance, not the same. */
 const LIMITS={Rookie:26,Minors:22,Majors:18};
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+/* Downward reinforcement (never upward — escalating up was the A1.4 bug):
+   a band's deck draws part of itself from the band below. Rookie is pure.
+   Exact quota per deck, fresh random sample each game — the RATIO is
+   dependable, the composition and order are not. */
+const MIX={Minors:{from:"Rookie",share:.30},Majors:{from:"Minors",share:.20}};
+
+/* Shuffled sample of count scenarios from pool; recycles in shuffled blocks
+   only if a future filter ever makes count exceed the pool (preserving the
+   A1.4 cycle-within semantics — today every quota fits its pool). */
+function drawFrom(pool,count){
+  let out=[];
+  while(out.length<count)out=out.concat(shuffle(pool.slice()).slice(0,count-out.length));
+  return out;
+}
+
 function buildDeck(band){
-  /* A1.4: cycle within the band rather than escalating — a repeat is a better
-     experience than an 8-year-old getting Majors scenarios at play 12 of a Long game. */
-  const core=shuffle(BANK.filter(s=>s.band===band));
-  /* Guards for future filters (position, concept): an empty core would spin the
-     fill loop forever, and returning [] would crash nextPlay (G.i%0 is NaN).
+  const core=BANK.filter(s=>s.band===band);
+  /* Guard for future filters: an empty core must neither hang nor crash.
      Never break for the player; be unmissable for whoever wrote the bad filter. */
   if(!core.length){console.error("buildDeck: empty filter for band "+band);return shuffle(BANK.slice());}
-  let deck=core.slice();
-  while(deck.length<G.target+6)deck=deck.concat(shuffle(core.slice()));
-  if(core.length<2)return deck;  /* one scenario: repeats are unavoidable, skip repair */
-  /* Repair pass: no scenario twice in a row, AND no position twice in a row
-     (B6 rotation — the catcher kid sees the whole field, not one bag). Scans
-     EVERY adjacency including the modulo wrap (nextPlay indexes G.deck[G.i%len])
-     and swaps the offender forward; repeats until a full scan is clean.
-     Converges in 1-2 passes; hard-capped so a pathological deck returns as-is. */
-  const n=deck.length;
-  for(let pass=0;pass<8;pass++){
-    let dirty=false;
-    for(let i=0;i<n;i++){
-      const j=(i+1)%n,k=(j+1)%n;
-      if(deck[i]===deck[j]||deck[i].you===deck[j].you){[deck[j],deck[k]]=[deck[k],deck[j]];dirty=true;}
+  const mix=MIX[band];
+  const low=mix?BANK.filter(s=>s.band===mix.from):[];
+  const n=G.target+6;
+  const nLow=low.length?Math.round(n*mix.share):0;
+  /* A sampled deck (unlike the old full-band deck) can concentrate one
+     position past what the swap-forward repair can untangle — so verify the
+     repair actually converged and RESAMPLE if it didn't. Terminates: capped
+     attempts, last deck returned best-effort. */
+  let deck;
+  for(let attempt=0;attempt<8;attempt++){
+    deck=shuffle(drawFrom(core,n-nLow).concat(drawFrom(low,nLow)));
+    if(new Set(deck).size<2)return deck;  /* degenerate deck: repairs are meaningless */
+    /* Repair pass: no scenario twice in a row, AND no position twice in a row
+       (B6 rotation — the catcher kid sees the whole field, not one bag). Scans
+       EVERY adjacency including the modulo wrap (nextPlay indexes G.deck[G.i%len])
+       and swaps the offender forward; repeats until a full scan is clean. */
+    const len=deck.length;
+    for(let pass=0;pass<8;pass++){
+      let dirty=false;
+      for(let i=0;i<len;i++){
+        const j=(i+1)%len,k=(j+1)%len;
+        if(deck[i]===deck[j]||deck[i].you===deck[j].you){[deck[j],deck[k]]=[deck[k],deck[j]];dirty=true;}
+      }
+      if(!dirty)break;
     }
-    if(!dirty)break;
+    let clean=true;
+    for(let i=0;i<deck.length;i++){
+      const j=(i+1)%deck.length;
+      if(deck[i]===deck[j]||deck[i].you===deck[j].you){clean=false;break;}
+    }
+    if(clean)break;
   }
   return deck;
 }

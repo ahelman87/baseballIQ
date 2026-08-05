@@ -12,6 +12,8 @@ still a target, not a location.
 
 Scenarios carry a `band` — Rookie (8U) / Minors (9–10) / Majors (11–12), per
 `docs/Addendum_B.md`. Bands are developmental, NOT difficulty levels. The numeric `d` is gone.
+Decks mix DOWNWARD for reinforcement (Minors 70/30 Rookie, Majors 80/20 Minors — the `MIX`
+table in index.html), never upward: serving above-band content was the A1.4 bug.
 
 ## Naming
 Name is "Baseball IQ", URL is **baseball-iq-sandy.vercel.app**. It is generic and may change.
