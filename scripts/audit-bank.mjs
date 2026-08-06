@@ -216,7 +216,39 @@ BANK.forEach((s, idx) => {
     const unforcedOccupied = (s.r[0] && false) || (s.r[1] && !(s.r[0])) || (s.r[2] && !(s.r[0] && s.r[1]));
     if (!s.breaks && unforcedOccupied && (holdLang.test(s.why) || holdLang.test(s.big)))
       warn(`${id} note says a runner can stay, but with no breaks the picture animates him advancing — add breaks`);
+
+    /* ── band simplification must be SITUATION-SAFE ──
+       A band may omit a concept (Rookie teaches no DPs), but no scenario may
+       depict a situation where an offered, untaught play strictly dominates
+       the taught answer — a kid choosing better baseball must never be
+       charged a run for it (found by playtest: 2b-r12-third taught a 233px
+       cross-diamond throw while the 89px force at the fielder's own bag sat
+       among the options, marked wrong). */
+    if (["first", "second", "third", "home"].includes(s.ans) && !s.ballZone && s.extra !== "Infield is in") {
+      const fpos = { first: P.first, second: P.second, third: P.third, home: P.home };
+      const you = P[s.you];
+      const dTo = b => Math.hypot(you[0] - fpos[b][0], you[1] - fpos[b][1]);
+      const f = { first: true, second: !!s.r[0], third: !!(s.r[0] && s.r[1]), home: !!(s.r[0] && s.r[1] && s.r[2]) };
+      const ansd = dTo(s.ans);
+      for (const opt of s.opts) {
+        if (opt === s.ans || !(opt in fpos) || !f[opt] || (s.alsoOk || []).includes(opt)) continue;
+        /* Rule A: dominated force — an offered forced base less than ~half the
+           throw is strictly better baseball than the taught answer. */
+        if (dTo(opt) < 0.55 * ansd)
+          err(`${id} taught throw ${s.ans}@${ansd.toFixed(0)}px is dominated by offered force ${opt}@${dTo(opt).toFixed(0)}px — a kid picking the better play gets punished`);
+        /* Rule B: with two outs any force ends it — the taught force must be
+           (near-)closest among offered forces. */
+        else if (s.outs === 2 && f[s.ans] && dTo(opt) + 40 < ansd)
+          warn(`${id} two outs: offered force ${opt}@${dTo(opt).toFixed(0)}px is meaningfully closer than taught ${s.ans}@${ansd.toFixed(0)}px`);
+      }
+    }
   }
+  /* Fly-ball variant of picture-vs-copy: "ran when the ball was hit" language
+     with no breaks means the copy asserts an early leave the picture never
+     shows — and usually implies the real out is BEHIND the runner. */
+  if (s.hit === "fly" && !s.breaks &&
+      /(ran|left|took off) when the ball was hit|left (first|second|third) early/i.test(s.ask + " " + s.why))
+    warn(`${id} fly-ball copy asserts the runner left on contact but has no breaks — picture contradicts copy, and the throw-behind may be the real out`);
 
   /* ── layout invariants ──
      Geometry is independent of the runtime option shuffle: order only recolors

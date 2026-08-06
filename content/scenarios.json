@@ -233,7 +233,7 @@
    ],
    "ans": "second",
    "big": "After the catch, throw to second.",
-   "why": "The runner ran when the ball was hit. Throw to second base so he can't steal the extra base."
+   "why": "He went halfway to watch the catch. Now he has to get back to first. Throw to second so he cannot change his mind and take it."
   },
   {
    "id": "2b-depth-back-first",
@@ -999,7 +999,8 @@
    ],
    "ans": "second",
    "big": "Off the bag? Get the lead runner.",
-   "why": "You are too far from first to race the batter there. The lead runner is heading to second. Throw ahead of him."
+   "why": "You are too far from first to race the batter there. The lead runner is heading to second. Throw ahead of him.",
+   "ballZone": "right"
   },
   {
    "id": "cf-hit-ahead-third",
@@ -1091,9 +1092,9 @@
     "first",
     "second"
    ],
-   "ans": "third",
-   "big": "Throw ahead of the lead runner.",
-   "why": "The runner from second is the lead runner, and he is going to third. Second base is behind him now. Throw to third."
+   "ans": "second",
+   "big": "The force is right next to you.",
+   "why": "The runner from first has to run to second, and you are standing right by the bag. Take the easy force out."
   },
   {
    "id": "rf-hit-ahead-third",
@@ -1160,9 +1161,9 @@
     "first",
     "second"
    ],
-   "ans": "home",
-   "big": "Stop the lead runner at the plate.",
-   "why": "With the bases loaded, the lead runner is heading home from third. Throw to the catcher and stop the run."
+   "ans": "second",
+   "big": "Loaded up? The out is next to you.",
+   "why": "With the bases loaded, every runner has to run. Second base is just a few steps away. The short flip beats the long throw home."
   },
   {
    "id": "3b-loaded-home",
@@ -1206,9 +1207,9 @@
     "first",
     "second"
    ],
-   "ans": "home",
-   "big": "Get the one heading home.",
-   "why": "Every base has a runner, so the lead runner is running home. First base can wait. Throw to the plate."
+   "ans": "second",
+   "big": "Take the sure out at your bag.",
+   "why": "Every base has a runner, so second is a force — and it is right there. The easy out now beats a long throw home that might get away."
   },
   {
    "id": "p-backup-first",
